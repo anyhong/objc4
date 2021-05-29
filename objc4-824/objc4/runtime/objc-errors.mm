@@ -102,30 +102,30 @@ static void _objc_crashlog(const char *message)
 
     mutex_locker_t lock(crashlog_lock);
 
-    char *oldmsg = (char *)CRGetCrashLogMessage();
-    size_t oldlen;
-    const size_t limit = 8000;
-
-    if (!oldmsg) {
-        newmsg = strdup(message);
-    } else if ((oldlen = strlen(oldmsg)) > limit) {
-        // limit total length by dropping old contents
-        char *truncmsg = oldmsg + oldlen - limit;
-        // advance past partial UTF-8 bytes
-        while (isUTF8Continuation(*truncmsg)) truncmsg++;
-        asprintf(&newmsg, "... %s\n%s", truncmsg, message);
-    } else {
-        asprintf(&newmsg, "%s\n%s", oldmsg, message);
-    }
-
-    if (newmsg) {
-        // Strip trailing newline
-        char *c = &newmsg[strlen(newmsg)-1];
-        if (*c == '\n') *c = '\0';
-        
-        if (oldmsg) free(oldmsg);
-        CRSetCrashLogMessage(newmsg);
-    }
+//    char *oldmsg = (char *)CRGetCrashLogMessage();
+//    size_t oldlen;
+//    const size_t limit = 8000;
+//
+//    if (!oldmsg) {
+//        newmsg = strdup(message);
+//    } else if ((oldlen = strlen(oldmsg)) > limit) {
+//        // limit total length by dropping old contents
+//        char *truncmsg = oldmsg + oldlen - limit;
+//        // advance past partial UTF-8 bytes
+//        while (isUTF8Continuation(*truncmsg)) truncmsg++;
+//        asprintf(&newmsg, "... %s\n%s", truncmsg, message);
+//    } else {
+//        asprintf(&newmsg, "%s\n%s", oldmsg, message);
+//    }
+//
+//    if (newmsg) {
+//        // Strip trailing newline
+//        char *c = &newmsg[strlen(newmsg)-1];
+//        if (*c == '\n') *c = '\0';
+//
+//        if (oldmsg) free(oldmsg);
+//        CRSetCrashLogMessage(newmsg);
+//    }
 }
 
 // Returns true if logs should be sent to stderr as well as syslog.
