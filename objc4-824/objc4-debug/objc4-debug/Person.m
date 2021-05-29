@@ -9,6 +9,18 @@
 
 @implementation Person
 
+- (void)dealloc {
+    
+}
+
++ (void)load {
+    
+}
+
++ (void)initialize {
+    
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) {

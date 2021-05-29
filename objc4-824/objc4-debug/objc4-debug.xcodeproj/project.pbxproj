@@ -10,6 +10,7 @@
 		393E691B2661EA8300C35D00 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 393E691A2661EA8300C35D00 /* main.m */; };
 		393E69282661EAC100C35D00 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 393E69272661EAC100C35D00 /* Person.m */; };
 		393E69292661EBD100C35D00 /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 393E69222661EAA600C35D00 /* libobjc.A.dylib */; };
+		393E692E26621B5100C35D00 /* Runner.m in Sources */ = {isa = PBXBuildFile; fileRef = 393E692D26621B5100C35D00 /* Runner.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		393E69262661EAC100C35D00 /* Person.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
 		393E69272661EAC100C35D00 /* Person.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
 		393E692A2661EC1000C35D00 /* objc4-debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "objc4-debug.entitlements"; sourceTree = "<group>"; };
+		393E692C26621B5100C35D00 /* Runner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Runner.h; sourceTree = "<group>"; };
+		393E692D26621B5100C35D00 /* Runner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Runner.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,8 @@
 				393E691A2661EA8300C35D00 /* main.m */,
 				393E69262661EAC100C35D00 /* Person.h */,
 				393E69272661EAC100C35D00 /* Person.m */,
+				393E692C26621B5100C35D00 /* Runner.h */,
+				393E692D26621B5100C35D00 /* Runner.m */,
 			);
 			path = "objc4-debug";
 			sourceTree = "<group>";
@@ -138,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				393E69282661EAC100C35D00 /* Person.m in Sources */,
+				393E692E26621B5100C35D00 /* Runner.m in Sources */,
 				393E691B2661EA8300C35D00 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
