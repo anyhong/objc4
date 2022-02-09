@@ -40,7 +40,7 @@
 #include <execinfo.h>
 #include "NSObject-internal.h"
 #include "NSObject-private.h"
-#include <os/feature_private.h>
+//#include <os/feature_private.h>
 
 extern "C" {
 #include <os/reason_private.h>
@@ -1144,11 +1144,11 @@ public:
         // Error. For bincompat purposes this is not 
         // fatal in executables built with old SDKs.
 
-        if (DebugPoolAllocation || sdkIsAtLeast(10_12, 10_0, 10_0, 3_0, 2_0)) {
-            // OBJC_DEBUG_POOL_ALLOCATION or new SDK. Bad pop is fatal.
-            _objc_fatal
-                ("Invalid or prematurely-freed autorelease pool %p.", token);
-        }
+//        if (DebugPoolAllocation || sdkIsAtLeast(10_12, 10_0, 10_0, 3_0, 2_0)) {
+//            // OBJC_DEBUG_POOL_ALLOCATION or new SDK. Bad pop is fatal.
+//            _objc_fatal
+//                ("Invalid or prematurely-freed autorelease pool %p.", token);
+//        }
 
         // Old SDK. Bad pop is warned once.
         static bool complained = false;
