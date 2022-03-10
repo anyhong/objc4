@@ -106,33 +106,33 @@ int objc_loadModule(char *moduleName, void (*class_callback) (Class, Category), 
 //	static OBJC_DECLARE_LOCK (loadLock);
 
 
-long	objc_loadModules   (char *			modlist[],
-                         void *			errStream,
-                         void			(*class_callback) (Class, Category),
-                         headerType **	hdr_addr,
-                         char *			debug_file)
+long    objc_loadModules   (char *            modlist[],
+                            void *            errStream,
+                            void            (*class_callback) (Class, Category),
+                            headerType **    hdr_addr,
+                            char *            debug_file)
 {
-    char **				modules;
-    int					code;
-    int					itWorked;
-
+    char **                modules;
+    int                    code;
+    int                    itWorked;
+    
     if (modlist == 0)
         return 0;
-
+    
     for (modules = &modlist[0]; *modules != 0; modules++)
     {
-        itWorked = objc_loadModule (*modules, class_callback, &code);
+        itWorked = objc_loadModule(*modules, class_callback, &code);
         if (itWorked == 0)
         {
             //if (errStream)
-            //	NXPrintf ((NXStream *) errStream, "objc_loadModules(%s) code = %d\n", *modules, code);
+            //    NXPrintf ((NXStream *) errStream, "objc_loadModules(%s) code = %d\n", *modules, code);
             return 1;
         }
-
+        
         if (hdr_addr)
             *(hdr_addr++) = 0;
     }
-
+    
     return 0;
 }
 
@@ -144,8 +144,7 @@ long	objc_loadModules   (char *			modlist[],
 * to objc_unloadModules() will probably unload the wrong stuff.
 **********************************************************************************/
 
-long	objc_unloadModules (void *			errStream,
-                         void			(*unload_callback) (Class, Category))
+long	objc_unloadModules (void *errStream, void (*unload_callback)(Class, Category))
 {
     headerType *	header_addr = 0;
     int errflag = 0;

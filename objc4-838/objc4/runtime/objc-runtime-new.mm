@@ -382,8 +382,7 @@ static void try_free(const void *p)
 }
 
 
-using ClassCopyFixupHandler = void (*)(Class _Nonnull oldClass,
-                                       Class _Nonnull newClass);
+using ClassCopyFixupHandler = void (*)(Class _Nonnull oldClass, Class _Nonnull newClass);
 // Normally there's only one handler registered.
 static GlobalSmallVector<ClassCopyFixupHandler, 1> classCopyFixupHandlers;
 
@@ -414,8 +413,7 @@ alloc_class_for_subclass(Class supercls, size_t extraBytes)
     memcpy(bits, superBits, superSize);
 
     // Erase the objc data and the Swift description in the new class.
-    swift_class_t *swcls = (swift_class_t *)
-        ((uint8_t *)bits + swiftSupercls->classAddressOffset);
+    swift_class_t *swcls = (swift_class_t *)((uint8_t *)bits + swiftSupercls->classAddressOffset);
     bzero(swcls, sizeof(objc_class));
     swcls->description = nil;
 
@@ -864,8 +862,7 @@ class Mixin {
             // This class is known to have the default implementations,
             // but we need to check categories.
             auto &methods = as_objc_class(cls)->data()->methods();
-            setCustom = Traits::scanMethodLists(methods.beginCategoryMethodLists(),
-                                                  methods.endCategoryMethodLists(cls));
+            setCustom = Traits::scanMethodLists(methods.beginCategoryMethodLists(), methods.endCategoryMethodLists(cls));
         } else if (!isMeta && !as_objc_class(cls)->getSuperclass()) {
             // Custom Root class
             setCustom = YES;
@@ -876,8 +873,7 @@ class Mixin {
         } else {
             // Not NSObject.
             auto &methods = as_objc_class(cls)->data()->methods();
-            setCustom = Traits::scanMethodLists(methods.beginLists(),
-                                                  methods.endLists());
+            setCustom = Traits::scanMethodLists(methods.beginLists(), methods.endLists());
         }
         if (slowpath(setCustom)) {
             if (ShouldPrint) printCustom(cls, Bundle, inherited);
@@ -1295,8 +1291,7 @@ fixupMethodList(method_list_t *mlist, bool bundleCopy, bool sort)
 
 
 static void 
-prepareMethodLists(Class cls, method_list_t **addedLists, int addedCount,
-                   bool baseMethods, bool methodsFromBundle, const char *why)
+prepareMethodLists(Class cls, method_list_t **addedLists, int addedCount, bool baseMethods, bool methodsFromBundle, const char *why)
 {
     runtimeLock.assertLocked();
 
@@ -1382,8 +1377,7 @@ class_rw_t::extAlloc(const class_ro_t *ro, bool deepCopy)
 // Assumes the categories in cats are all loaded and sorted by load order, 
 // oldest categories first.
 static void
-attachCategories(Class cls, const locstamped_category_t *cats_list, uint32_t cats_count,
-                 int flags)
+attachCategories(Class cls, const locstamped_category_t *cats_list, uint32_t cats_count, int flags)
 {
     if (slowpath(PrintReplacedMethods)) {
         printReplacements(cls, cats_list, cats_count);
@@ -1451,8 +1445,7 @@ attachCategories(Class cls, const locstamped_category_t *cats_list, uint32_t cat
     }
 
     if (mcount > 0) {
-        prepareMethodLists(cls, mlists + ATTACH_BUFSIZ - mcount, mcount,
-                           NO, fromBundle, __func__);
+        prepareMethodLists(cls, mlists + ATTACH_BUFSIZ - mcount, mcount, NO, fromBundle, __func__);
         rwe->methods.attachLists(mlists + ATTACH_BUFSIZ - mcount, mcount);
         if (flags & ATTACH_EXISTING) {
             flushCaches(cls, __func__, [](Class c){
@@ -1486,8 +1479,7 @@ static void methodizeClass(Class cls, Class previously)
 
     // Methodizing for the first time
     if (PrintConnecting) {
-        _objc_inform("CLASS: methodizing class '%s' %s", 
-                     cls->nameForLogging(), isMeta ? "(meta)" : "");
+        _objc_inform("CLASS: methodizing class '%s' %s", cls->nameForLogging(), isMeta ? "(meta)" : "");
     }
 
     // Install methods and properties that the class implements itself.
@@ -1517,25 +1509,21 @@ static void methodizeClass(Class cls, Class previously)
     // Attach categories.
     if (previously) {
         if (isMeta) {
-            objc::unattachedCategories.attachToClass(cls, previously,
-                                                     ATTACH_METACLASS);
+            objc::unattachedCategories.attachToClass(cls, previously, ATTACH_METACLASS);
         } else {
             // When a class relocates, categories with class methods
             // may be registered on the class itself rather than on
             // the metaclass. Tell attachToClass to look for those.
-            objc::unattachedCategories.attachToClass(cls, previously,
-                                                     ATTACH_CLASS_AND_METACLASS);
+            objc::unattachedCategories.attachToClass(cls, previously, ATTACH_CLASS_AND_METACLASS);
         }
     }
-    objc::unattachedCategories.attachToClass(cls, cls,
-                                             isMeta ? ATTACH_METACLASS : ATTACH_CLASS);
+    objc::unattachedCategories.attachToClass(cls, cls, isMeta ? ATTACH_METACLASS : ATTACH_CLASS);
 
 #if DEBUG
     // Debug: sanity-check all SELs; log method list contents
     for (const auto& meth : rw->methods()) {
         if (PrintConnecting) {
-            _objc_inform("METHOD %c[%s %s]", isMeta ? '+' : '-', 
-                         cls->nameForLogging(), sel_getName(meth.name()));
+            _objc_inform("METHOD %c[%s %s]", isMeta ? '+' : '-', cls->nameForLogging(), sel_getName(meth.name()));
         }
         ASSERT(sel_registerName(sel_getName(meth.name())) == meth.name());
     }
@@ -1566,9 +1554,7 @@ static NXMapTable *nonMetaClasses(void)
     if (nonmeta_class_map) return nonmeta_class_map;
 
     // nonmeta_class_map is typically small
-    INIT_ONCE_PTR(nonmeta_class_map, 
-                  NXCreateMapTable(NXPtrValueMapPrototype, 32), 
-                  NXFreeMapTable(v));
+    INIT_ONCE_PTR(nonmeta_class_map, NXCreateMapTable(NXPtrValueMapPrototype, 32), NXFreeMapTable(v));
 
     return nonmeta_class_map;
 }
@@ -1598,8 +1584,7 @@ static void removeNonMetaClass(Class cls)
 }
 
 
-static bool scanMangledField(const char *&string, const char *end, 
-                             const char *&field, int& length)
+static bool scanMangledField(const char *&string, const char *end, const char *&field, int& length)
 {
     // Leading zero not allowed.
     if (*string == '0') return false;
@@ -1829,8 +1814,7 @@ static NXMapTable *futureNamedClasses()
     if (future_named_class_map) return future_named_class_map;
 
     // future_named_class_map is big enough for CF's classes and a few others
-    future_named_class_map = 
-        NXCreateMapTable(NXStrValueMapPrototype, 32);
+    future_named_class_map = NXCreateMapTable(NXStrValueMapPrototype, 32);
 
     return future_named_class_map;
 }
@@ -1940,8 +1924,7 @@ static void addRemappedClass(Class oldcls, Class newcls)
     runtimeLock.assertLocked();
 
     if (PrintFuture) {
-        _objc_inform("FUTURE: using %p instead of %p for %s", 
-                     (void*)newcls, (void*)oldcls, oldcls->nameForLogging());
+        _objc_inform("FUTURE: using %p instead of %p for %s", (void*)newcls, (void*)oldcls, oldcls->nameForLogging());
     }
 
     auto result = remappedClasses(YES)->insert({ oldcls, newcls });
@@ -2144,8 +2127,7 @@ static Class getMaybeUnrealizedNonMetaClass(Class metacls, id inst)
 *   This function may drop the lock.
 *   On exit the lock is re-acquired or dropped as requested by leaveLocked.
 **********************************************************************/
-static Class initializeAndMaybeRelock(Class cls, id inst,
-                                      mutex_t& lock, bool leaveLocked)
+static Class initializeAndMaybeRelock(Class cls, id inst, mutex_t& lock, bool leaveLocked)
 {
     lock.assertLocked();
     ASSERT(cls->isRealized());
@@ -2309,9 +2291,7 @@ static NXMapTable *protocols(void)
     
     runtimeLock.assertLocked();
 
-    INIT_ONCE_PTR(protocol_map, 
-                  NXCreateMapTable(NXStrValueMapPrototype, 16), 
-                  NXFreeMapTable(v) );
+    INIT_ONCE_PTR(protocol_map, NXCreateMapTable(NXStrValueMapPrototype, 16), NXFreeMapTable(v) );
 
     return protocol_map;
 }
@@ -2365,8 +2345,7 @@ static ALWAYS_INLINE protocol_t *remapProtocol(protocol_ref_t proto)
     if (((protocol_t *)proto)->isCanonical())
         return (protocol_t *)proto;
 
-    protocol_t *newproto = (protocol_t *)
-        getProtocol(((protocol_t *)proto)->mangledName);
+    protocol_t *newproto = (protocol_t *)getProtocol(((protocol_t *)proto)->mangledName);
     return newproto ? newproto : (protocol_t *)proto;
 }
 
@@ -2641,8 +2620,7 @@ static Class realizeClassWithoutSwift(Class cls, Class previously)
             hackedDispatch = true;
             instancesRequireRawIsa = true;
         }
-        else if (supercls  &&  supercls->getSuperclass()  &&
-                 supercls->instancesRequireRawIsa())
+        else if (supercls  &&  supercls->getSuperclass()  && supercls->instancesRequireRawIsa())
         {
             // This is also propagated by addSubclass()
             // but nonpointer isa setup needs it earlier.
@@ -2680,8 +2658,7 @@ static Class realizeClassWithoutSwift(Class cls, Class previously)
     
     // Propagate the associated objects forbidden flag from ro or from
     // the superclass.
-    if ((ro->flags & RO_FORBIDS_ASSOCIATED_OBJECTS) ||
-        (supercls && supercls->forbidsAssociatedObjects()))
+    if ((ro->flags & RO_FORBIDS_ASSOCIATED_OBJECTS) || (supercls && supercls->forbidsAssociatedObjects()))
     {
         rw->flags |= RW_FORBIDS_ASSOCIATED_OBJECTS;
     }
@@ -2994,8 +2971,7 @@ Class objc_getFutureClass(const char *name)
     cls = look_up_class(name, YES, NO);
     if (cls) {
         if (PrintFuture) {
-            _objc_inform("FUTURE: found %p already in use for %s", 
-                         (void*)cls, name);
+            _objc_inform("FUTURE: found %p already in use for %s", (void*)cls, name);
         }
 
         return cls;
@@ -3085,8 +3061,7 @@ void _objc_flush_caches(Class cls)
 * Locking: write-locks runtimeLock
 **********************************************************************/
 void
-map_images(unsigned count, const char * const paths[],
-           const struct mach_header * const mhdrs[])
+map_images(unsigned count, const char * const paths[], const struct mach_header * const mhdrs[])
 {
     mutex_locker_t lock(runtimeLock);
     return map_images_nolock(count, paths, mhdrs);
@@ -3135,8 +3110,7 @@ static void load_categories_nolock(header_info *hi) {
                 // First, register the category with its target class.
                 // Then, rebuild the class's method lists (etc) if
                 // the class is realized.
-                if (cat->instanceMethods ||  cat->protocols
-                    ||  cat->instanceProperties)
+                if (cat->instanceMethods ||  cat->protocols || cat->instanceProperties)
                 {
                     if (cls->isRealized()) {
                         attachCategories(cls, &lc, 1, ATTACH_EXISTING);
@@ -3145,8 +3119,7 @@ static void load_categories_nolock(header_info *hi) {
                     }
                 }
 
-                if (cat->classMethods  ||  cat->protocols
-                    ||  (hasClassProperties && cat->_classProperties))
+                if (cat->classMethods  ||  cat->protocols || (hasClassProperties && cat->_classProperties))
                 {
                     if (cls->ISA()->isRealized()) {
                         attachCategories(cls->ISA(), &lc, 1, ATTACH_EXISTING | ATTACH_METACLASS);
@@ -3405,8 +3378,7 @@ readProtocol(protocol_t *newproto, Class protocol_class,
                 // Note newproto is an entry in our __objc_protolist section which
                 // for shared cache binaries points to the original protocol in
                 // that binary, not the shared cache uniqued one.
-                auto cacheproto = (protocol_t *)
-                    getSharedCachePreoptimizedProtocol(newproto->mangledName);
+                auto cacheproto = (protocol_t *)getSharedCachePreoptimizedProtocol(newproto->mangledName);
                 if (cacheproto && cacheproto->isCanonical())
                     cacheproto->clearIsCanonical();
             }
@@ -3417,8 +3389,7 @@ readProtocol(protocol_t *newproto, Class protocol_class,
         // but in order to allow out-of-cache replacement we need 
         // to add it to the protocol table now.
 
-        protocol_t *cacheproto = (protocol_t *)
-            getPreoptimizedProtocol(newproto->mangledName);
+        protocol_t *cacheproto = (protocol_t *)getPreoptimizedProtocol(newproto->mangledName);
         protocol_t *installedproto;
         if (cacheproto  &&  cacheproto != newproto) {
             // Another definition in the shared cache wins (because 
@@ -3432,12 +3403,10 @@ readProtocol(protocol_t *newproto, Class protocol_class,
         
         ASSERT(installedproto->getIsa() == protocol_class);
         ASSERT(installedproto->size >= sizeof(protocol_t));
-        insertFn(protocol_map, installedproto->mangledName, 
-                 installedproto);
+        insertFn(protocol_map, installedproto->mangledName, installedproto);
         
         if (PrintProtocols) {
-            _objc_inform("PROTOCOLS: protocol at %p is %s", 
-                         installedproto, installedproto->nameForLogging());
+            _objc_inform("PROTOCOLS: protocol at %p is %s", installedproto, installedproto->nameForLogging());
             if (newproto != installedproto) {
                 _objc_inform("PROTOCOLS: protocol at %p is %s  "
                              "(duplicate of %p)", 
@@ -3452,8 +3421,7 @@ readProtocol(protocol_t *newproto, Class protocol_class,
         newproto->initIsa(protocol_class);  // fixme pinned
         insertFn(protocol_map, newproto->mangledName, newproto);
         if (PrintProtocols) {
-            _objc_inform("PROTOCOLS: protocol at %p is %s",
-                         newproto, newproto->nameForLogging());
+            _objc_inform("PROTOCOLS: protocol at %p is %s", newproto, newproto->nameForLogging());
         }
     }
 }
@@ -3496,8 +3464,7 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
 # if SUPPORT_INDEXED_ISA
         // Disable nonpointer isa if any image contains old Swift code
         for (EACH_HEADER) {
-            if (hi->info()->containsSwift()  &&
-                hi->info()->swiftUnstableVersion() < objc_image_info::SwiftVersion3)
+            if (hi->info()->containsSwift() && hi->info()->swiftUnstableVersion() < objc_image_info::SwiftVersion3)
             {
                 DisableNonpointerIsa = true;
                 if (PrintRawIsa) {
@@ -3554,10 +3521,8 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
         // namedClasses
         // Preoptimized classes don't go in this table.
         // 4/3 is NXMapTable's load factor
-        int namedClassesSize = 
-            (isPreoptimized() ? unoptimizedTotalClasses : totalClasses) * 4 / 3;
-        gdb_objc_realized_classes =
-            NXCreateMapTable(NXStrValueMapPrototype, namedClassesSize);
+        int namedClassesSize = (isPreoptimized() ? unoptimizedTotalClasses : totalClasses) * 4 / 3;
+        gdb_objc_realized_classes = NXCreateMapTable(NXStrValueMapPrototype, namedClassesSize);
 
         ts.log("IMAGE TIMES: first time tasks");
     }
@@ -3608,9 +3573,7 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
                 // Class was moved but not deleted. Currently this occurs 
                 // only when the new class resolved a future class.
                 // Non-lazily realize the class below.
-                resolvedFutureClasses = (Class *)
-                    realloc(resolvedFutureClasses, 
-                            (resolvedFutureClassCount+1) * sizeof(Class));
+                resolvedFutureClasses = (Class *)realloc(resolvedFutureClasses, (resolvedFutureClassCount+1) * sizeof(Class));
                 resolvedFutureClasses[resolvedFutureClassCount++] = newCls;
             }
         }
@@ -3673,8 +3636,7 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
         // definition
         if (launchTime && isPreoptimized) {
             if (PrintProtocols) {
-                _objc_inform("PROTOCOLS: Skipping reading protocols in image: %s",
-                             hi->fname());
+                _objc_inform("PROTOCOLS: Skipping reading protocols in image: %s", hi->fname());
             }
             continue;
         }
@@ -3683,8 +3645,7 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
 
         protocol_t * const *protolist = _getObjc2ProtocolList(hi, &count);
         for (i = 0; i < count; i++) {
-            readProtocol(protolist[i], cls, protocol_map, 
-                         isPreoptimized, isBundle);
+            readProtocol(protolist[i], cls, protocol_map, isPreoptimized, isBundle);
         }
     }
 
@@ -3746,6 +3707,7 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
                 // classes like Swift.__EmptyArrayStorage
             }
             realizeClassWithoutSwift(cls, nil);
+            printf("类名称：%s\n", cls->nameForLogging());
         }
     }
 
@@ -3870,8 +3832,7 @@ void prepare_load_methods(const headerType *mhdr)
 
     runtimeLock.assertLocked();
 
-    classref_t const *classlist = 
-        _getObjc2NonlazyClassList(mhdr, &count);
+    classref_t const *classlist = _getObjc2NonlazyClassList(mhdr, &count);
     for (i = 0; i < count; i++) {
         schedule_class_load(remapClass(classlist[i]));
     }
@@ -4156,8 +4117,7 @@ const char *property_getAttributes(objc_property_t prop)
     return prop->attributes;
 }
 
-objc_property_attribute_t *property_copyAttributeList(objc_property_t prop, 
-                                                      unsigned int *outCount)
+objc_property_attribute_t *property_copyAttributeList(objc_property_t prop, unsigned int *outCount)
 {
     if (!prop) {
         if (outCount) *outCount = 0;
@@ -4230,8 +4190,7 @@ static uint32_t getExtendedTypesIndexForMethod(protocol_t *proto, const method_t
 {
     uint32_t a;
     uint32_t b;
-    getExtendedTypesIndexesForMethod(proto, m, isRequiredMethod, 
-                                     isInstanceMethod, a, b);
+    getExtendedTypesIndexesForMethod(proto, m, isRequiredMethod, isInstanceMethod, a, b);
     return a + b;
 }
 
@@ -4241,8 +4200,7 @@ static uint32_t getExtendedTypesIndexForMethod(protocol_t *proto, const method_t
 * Fixes up a single method list in a protocol.
 **********************************************************************/
 static void
-fixupProtocolMethodList(protocol_t *proto, method_list_t *mlist,  
-                        bool required, bool instance)
+fixupProtocolMethodList(protocol_t *proto, method_list_t *mlist, bool required, bool instance)
 {
     runtimeLock.assertLocked();
 
@@ -4260,8 +4218,7 @@ fixupProtocolMethodList(protocol_t *proto, method_list_t *mlist,
         uint32_t count = mlist->count;
         uint32_t prefix;
         uint32_t junk;
-        getExtendedTypesIndexesForMethod(proto, &mlist->get(0), 
-                                         required, instance, prefix, junk);
+        getExtendedTypesIndexesForMethod(proto, &mlist->get(0), required, instance, prefix, junk);
         for (uint32_t i = 0; i < count; i++) {
             for (uint32_t j = i+1; j < count; j++) {
                 auto& mi = mlist->get(i).big();
@@ -4368,9 +4325,7 @@ protocol_getMethod_nolock(protocol_t *proto, SEL sel,
         method_t *m;
         for (uint32_t i = 0; i < proto->protocols->count; i++) {
             protocol_t *realProto = remapProtocol(proto->protocols->list[i]);
-            m = protocol_getMethod_nolock(realProto, sel, 
-                                          isRequiredMethod, isInstanceMethod, 
-                                          true);
+            m = protocol_getMethod_nolock(realProto, sel, isRequiredMethod, isInstanceMethod, true);
             if (m) return m;
         }
     }
@@ -4391,8 +4346,7 @@ protocol_getMethod(protocol_t *proto, SEL sel, bool isRequiredMethod, bool isIns
     fixupProtocolIfNeeded(proto);
 
     mutex_locker_t lock(runtimeLock);
-    return _method_sign(protocol_getMethod_nolock(proto, sel, isRequiredMethod,
-                                                  isInstanceMethod, recursive));
+    return _method_sign(protocol_getMethod_nolock(proto, sel, isRequiredMethod, isInstanceMethod, recursive));
 }
 
 
@@ -4403,9 +4357,7 @@ protocol_getMethod(protocol_t *proto, SEL sel, bool isRequiredMethod, bool isIns
 * Locking: runtimeLock must be held by the caller
 **********************************************************************/
 const char * 
-protocol_getMethodTypeEncoding_nolock(protocol_t *proto, SEL sel, 
-                                      bool isRequiredMethod, 
-                                      bool isInstanceMethod)
+protocol_getMethodTypeEncoding_nolock(protocol_t *proto, SEL sel, bool isRequiredMethod, bool isInstanceMethod)
 {
     runtimeLock.assertLocked();
 
@@ -4413,14 +4365,9 @@ protocol_getMethodTypeEncoding_nolock(protocol_t *proto, SEL sel,
     ASSERT(proto->isFixedUp());
 
     if (proto->extendedMethodTypes()) {
-        method_t *m = protocol_getMethod_nolock(proto, sel,
-                                                isRequiredMethod,
-                                                isInstanceMethod,
-                                                false);
+        method_t *m = protocol_getMethod_nolock(proto, sel, isRequiredMethod, isInstanceMethod, false);
         if (m) {
-            uint32_t i = getExtendedTypesIndexForMethod(proto, m,
-                                                        isRequiredMethod,
-                                                        isInstanceMethod);
+            uint32_t i = getExtendedTypesIndexForMethod(proto, m, isRequiredMethod, isInstanceMethod);
             return proto->extendedMethodTypes()[i];
         }
     }
@@ -4445,8 +4392,7 @@ protocol_getMethodTypeEncoding_nolock(protocol_t *proto, SEL sel,
 * Locking: acquires runtimeLock
 **********************************************************************/
 const char * 
-_protocol_getMethodTypeEncoding(Protocol *proto_gen, SEL sel, 
-                                BOOL isRequiredMethod, BOOL isInstanceMethod)
+_protocol_getMethodTypeEncoding(Protocol *proto_gen, SEL sel, BOOL isRequiredMethod, BOOL isInstanceMethod)
 {
     protocol_t *proto = newprotocol(proto_gen);
 
@@ -4454,9 +4400,7 @@ _protocol_getMethodTypeEncoding(Protocol *proto_gen, SEL sel,
     fixupProtocolIfNeeded(proto);
 
     mutex_locker_t lock(runtimeLock);
-    return protocol_getMethodTypeEncoding_nolock(proto, sel, 
-                                                 isRequiredMethod, 
-                                                 isInstanceMethod);
+    return protocol_getMethodTypeEncoding_nolock(proto, sel, isRequiredMethod, isInstanceMethod);
 }
 
 
@@ -4473,8 +4417,7 @@ protocol_t::demangledName()
     
     if (! _demangledName) {
         char *de = copySwiftV1DemangledName(mangledName, true/*isProtocol*/);
-        if (! OSAtomicCompareAndSwapPtrBarrier(nil, (void*)(de ?: mangledName), 
-                                               (void**)&_demangledName)) 
+        if (! OSAtomicCompareAndSwapPtrBarrier(nil, (void*)(de ?: mangledName), (void**)&_demangledName))
         {
             if (de) free(de);
         }
@@ -4501,12 +4444,9 @@ protocol_getName(Protocol *proto)
 * Locking: runtimeLock must not be held by the caller
 **********************************************************************/
 struct objc_method_description 
-protocol_getMethodDescription(Protocol *p, SEL aSel, 
-                              BOOL isRequiredMethod, BOOL isInstanceMethod)
+protocol_getMethodDescription(Protocol *p, SEL aSel, BOOL isRequiredMethod, BOOL isInstanceMethod)
 {
-    Method mSigned =
-        protocol_getMethod(newprotocol(p), aSel, 
-                           isRequiredMethod, isInstanceMethod, true);
+    Method mSigned = protocol_getMethod(newprotocol(p), aSel, isRequiredMethod, isInstanceMethod, true);
     method_t *m = _method_auth(mSigned);
     // method_getDescription is inefficient for small methods. Don't bother
     // trying to use it, just make our own.
@@ -4563,8 +4503,7 @@ protocol_conformsToProtocol_nolock(protocol_t *self, protocol_t *other)
 BOOL protocol_conformsToProtocol(Protocol *self, Protocol *other)
 {
     mutex_locker_t lock(runtimeLock);
-    return protocol_conformsToProtocol_nolock(newprotocol(self), 
-                                              newprotocol(other));
+    return protocol_conformsToProtocol_nolock(newprotocol(self), newprotocol(other));
 }
 
 
@@ -4591,9 +4530,7 @@ BOOL protocol_isEqual(Protocol *self, Protocol *other)
 * Locking: acquires runtimeLock
 **********************************************************************/
 struct objc_method_description *
-protocol_copyMethodDescriptionList(Protocol *p, 
-                                   BOOL isRequiredMethod,BOOL isInstanceMethod,
-                                   unsigned int *outCount)
+protocol_copyMethodDescriptionList(Protocol *p, BOOL isRequiredMethod,BOOL isInstanceMethod, unsigned int *outCount)
 {
     protocol_t *proto = newprotocol(p);
     struct objc_method_description *result = nil;
@@ -4632,8 +4569,7 @@ protocol_copyMethodDescriptionList(Protocol *p,
 * Locking: runtimeLock must be held by the caller
 **********************************************************************/
 static property_t * 
-protocol_getProperty_nolock(protocol_t *proto, const char *name, 
-                            bool isRequiredProperty, bool isInstanceProperty)
+protocol_getProperty_nolock(protocol_t *proto, const char *name, bool isRequiredProperty, bool isInstanceProperty)
 {
     runtimeLock.assertLocked();
 
@@ -4656,10 +4592,7 @@ protocol_getProperty_nolock(protocol_t *proto, const char *name,
         uintptr_t i;
         for (i = 0; i < proto->protocols->count; i++) {
             protocol_t *p = remapProtocol(proto->protocols->list[i]);
-            property_t *prop = 
-                protocol_getProperty_nolock(p, name, 
-                                            isRequiredProperty, 
-                                            isInstanceProperty);
+            property_t *prop = protocol_getProperty_nolock(p, name, isRequiredProperty, isInstanceProperty);
             if (prop) return prop;
         }
     }
@@ -4667,15 +4600,12 @@ protocol_getProperty_nolock(protocol_t *proto, const char *name,
     return nil;
 }
 
-objc_property_t protocol_getProperty(Protocol *p, const char *name, 
-                              BOOL isRequiredProperty, BOOL isInstanceProperty)
+objc_property_t protocol_getProperty(Protocol *p, const char *name, BOOL isRequiredProperty, BOOL isInstanceProperty)
 {
     if (!p  ||  !name) return nil;
 
     mutex_locker_t lock(runtimeLock);
-    return (objc_property_t)
-        protocol_getProperty_nolock(newprotocol(p), name, 
-                                    isRequiredProperty, isInstanceProperty);
+    return (objc_property_t)protocol_getProperty_nolock(newprotocol(p), name, isRequiredProperty, isInstanceProperty);
 }
 
 
@@ -4710,8 +4640,7 @@ copyPropertyList(property_list_t *plist, unsigned int *outCount)
 }
 
 objc_property_t *
-protocol_copyPropertyList2(Protocol *proto, unsigned int *outCount, 
-                           BOOL isRequiredProperty, BOOL isInstanceProperty)
+protocol_copyPropertyList2(Protocol *proto, unsigned int *outCount, BOOL isRequiredProperty, BOOL isInstanceProperty)
 {
     if (!proto  ||  !isRequiredProperty) {
         // Optional properties are not currently supported.
@@ -4721,17 +4650,14 @@ protocol_copyPropertyList2(Protocol *proto, unsigned int *outCount,
 
     mutex_locker_t lock(runtimeLock);
 
-    property_list_t *plist = isInstanceProperty
-        ? newprotocol(proto)->instanceProperties
-        : newprotocol(proto)->classProperties();
+    property_list_t *plist = isInstanceProperty ? newprotocol(proto)->instanceProperties : newprotocol(proto)->classProperties();
     return (objc_property_t *)copyPropertyList(plist, outCount);
 }
 
 objc_property_t *
 protocol_copyPropertyList(Protocol *proto, unsigned int *outCount)
 {
-    return protocol_copyPropertyList2(proto, outCount, 
-                                      YES/*required*/, YES/*instance*/);
+    return protocol_copyPropertyList2(proto, outCount, YES/*required*/, YES/*instance*/);
 }
 
 
@@ -4878,13 +4804,9 @@ protocol_addProtocol(Protocol *proto_gen, Protocol *addition_gen)
     
     protocol_list_t *protolist = proto->protocols;
     if (!protolist) {
-        protolist = (protocol_list_t *)
-            calloc(1, sizeof(protocol_list_t) 
-                             + sizeof(protolist->list[0]));
+        protolist = (protocol_list_t *)calloc(1, sizeof(protocol_list_t) + sizeof(protolist->list[0]));
     } else {
-        protolist = (protocol_list_t *)
-            realloc(protolist, protocol_list_size(protolist) 
-                              + sizeof(protolist->list[0]));
+        protolist = (protocol_list_t *)realloc(protolist, protocol_list_size(protolist) + sizeof(protolist->list[0]));
     }
 
     protolist->list[protolist->count++] = (protocol_ref_t)addition;
@@ -4915,8 +4837,7 @@ protocol_addMethod_nolock(method_list_t*& list, SEL name, const char *types)
 }
 
 void 
-protocol_addMethodDescription(Protocol *proto_gen, SEL name, const char *types,
-                              BOOL isRequiredMethod, BOOL isInstanceMethod) 
+protocol_addMethodDescription(Protocol *proto_gen, SEL name, const char *types, BOOL isRequiredMethod, BOOL isInstanceMethod)
 {
     protocol_t *proto = newprotocol(proto_gen);
 
@@ -4951,9 +4872,7 @@ protocol_addMethodDescription(Protocol *proto_gen, SEL name, const char *types,
 * Locking: acquires runtimeLock
 **********************************************************************/
 static void 
-protocol_addProperty_nolock(property_list_t *&plist, const char *name, 
-                            const objc_property_attribute_t *attrs, 
-                            unsigned int count)
+protocol_addProperty_nolock(property_list_t *&plist, const char *name, const objc_property_attribute_t *attrs, unsigned int count)
 {
     if (!plist) {
         plist = (property_list_t *)calloc(property_list_t::byteSize(sizeof(property_t), 1), 1);
@@ -5195,8 +5114,7 @@ objc_copyProtocolList(unsigned int *outCount)
     Protocol *proto;
     const char *name;
     NXMapState state = NXInitMapState(protocol_map);
-    while (NXNextMapState(protocol_map, &state, 
-                          (const void **)&name, (const void **)&proto))
+    while (NXNextMapState(protocol_map, &state, (const void **)&name, (const void **)&proto))
     {
         result[i++] = proto;
     }
@@ -5586,8 +5504,7 @@ copyClassesForImage_nolock(header_info *hi, unsigned int *outCount)
 
     size_t count;
     classref_t const *classlist = _getObjc2ClassList(hi, &count);
-    Class *classes = (Class *)
-        malloc((count+1) * sizeof(Class));
+    Class *classes = (Class *)malloc((count+1) * sizeof(Class));
 
     size_t shift = 0;
     for (size_t i = 0; i < count; i++) {
@@ -5859,8 +5776,7 @@ objc_class::demangledName(bool needsLock)
         // Class is already realized or future.
         // Save demangling result in rw data.
         // We may not own runtimeLock so use an atomic operation instead.
-        if (! OSAtomicCompareAndSwapPtrBarrier(nil, (void*)(de ?: mangled), 
-                                               (void**)&rwe->demangledName))
+        if (! OSAtomicCompareAndSwapPtrBarrier(nil, (void*)(de ?: mangled), (void**)&rwe->demangledName))
         {
             if (de) free(de);
         }
@@ -6078,8 +5994,7 @@ search_method_list(const method_list_t *mlist, SEL sel)
  **********************************************************************/
 template<typename T>
 static NEVER_INLINE bool
-method_lists_contains_any(T *mlists, T *end,
-                          SEL sels[], size_t selcount)
+method_lists_contains_any(T *mlists, T *end, SEL sels[], size_t selcount)
 {
     while (mlists < end) {
         const method_list_t *mlist = *mlists++;
@@ -6220,8 +6135,7 @@ static void resolveClassMethod(id inst, SEL sel, Class cls)
         nonmeta = getMaybeUnrealizedNonMetaClass(cls, inst);
         // +initialize path should have realized nonmeta already
         if (!nonmeta->isRealized()) {
-            _objc_fatal("nonmeta class %s (%p) unexpectedly not realized",
-                        nonmeta->nameForLogging(), nonmeta);
+            _objc_fatal("nonmeta class %s (%p) unexpectedly not realized", nonmeta->nameForLogging(), nonmeta);
         }
     }
     BOOL (*msg)(Class, SEL, SEL) = (typeof(msg))objc_msgSend;
@@ -6680,8 +6594,7 @@ objc_class::setInitialized()
 #endif
 
     if (PrintInitializing) {
-        _objc_inform("INITIALIZE: thread %p: setInitialized(%s)",
-                     objc_thread_self(), cls->nameForLogging());
+        _objc_inform("INITIALIZE: thread %p: setInitialized(%s)", objc_thread_self(), cls->nameForLogging());
     }
     // Update the +initialize flags.
     // Do this last.
@@ -6805,8 +6718,7 @@ static const char *empty_lazyClassNamer(Class cls __unused) {
 
 static ChainedHookFunction<objc_hook_lazyClassNamer> LazyClassNamerHook{empty_lazyClassNamer};
 
-void objc_setHook_lazyClassNamer(_Nonnull objc_hook_lazyClassNamer newValue,
-                                  _Nonnull objc_hook_lazyClassNamer * _Nonnull oldOutValue) {
+void objc_setHook_lazyClassNamer(_Nonnull objc_hook_lazyClassNamer newValue, _Nonnull objc_hook_lazyClassNamer * _Nonnull oldOutValue) {
     LazyClassNamerHook.set(newValue, oldOutValue);
 }
 
@@ -7115,8 +7027,7 @@ addMethod(Class cls, SEL name, IMP imp, const char *types, bool replace)
         // fixme optimize
         method_list_t *newlist;
         newlist = (method_list_t *)calloc(method_list_t::byteSize(method_t::bigSize, 1), 1);
-        newlist->entsizeAndFlags = 
-            (uint32_t)sizeof(struct method_t::big) | fixed_up_method_list;
+        newlist->entsizeAndFlags = (uint32_t)sizeof(struct method_t::big) | fixed_up_method_list;
         newlist->count = 1;
         auto &first = newlist->begin()->big();
         first.name = name;
@@ -7139,8 +7050,7 @@ addMethod(Class cls, SEL name, IMP imp, const char *types, bool replace)
 * Locking: runtimeLock must be held by the caller
 **********************************************************************/
 static SEL *
-addMethods(Class cls, const SEL *names, const IMP *imps, const char **types,
-           uint32_t count, bool replace, uint32_t *outFailedCount)
+addMethods(Class cls, const SEL *names, const IMP *imps, const char **types, uint32_t count, bool replace, uint32_t *outFailedCount)
 {
     runtimeLock.assertLocked();
     
@@ -7152,8 +7062,7 @@ addMethods(Class cls, const SEL *names, const IMP *imps, const char **types,
     method_list_t *newlist;
     size_t newlistSize = method_list_t::byteSize(sizeof(struct method_t::big), count);
     newlist = (method_list_t *)calloc(newlistSize, 1);
-    newlist->entsizeAndFlags =
-        (uint32_t)sizeof(struct method_t::big) | fixed_up_method_list;
+    newlist->entsizeAndFlags = (uint32_t)sizeof(struct method_t::big) | fixed_up_method_list;
     newlist->count = 0;
     
     SEL *failedNames = nil;
@@ -7168,8 +7077,7 @@ addMethods(Class cls, const SEL *names, const IMP *imps, const char **types,
                 if (failedNames == nil) {
                     // allocate an extra entry for a trailing NULL in case
                     // every method fails
-                    failedNames = (SEL *)calloc(sizeof(*failedNames),
-                                                count + 1);
+                    failedNames = (SEL *)calloc(sizeof(*failedNames), count + 1);
                 }
                 failedNames[failedCount] = m->name();
                 failedCount++;
@@ -7222,9 +7130,7 @@ class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)
 
 
 SEL *
-class_addMethodsBulk(Class cls, const SEL *names, const IMP *imps,
-                     const char **types, uint32_t count,
-                     uint32_t *outFailedCount)
+class_addMethodsBulk(Class cls, const SEL *names, const IMP *imps, const char **types, uint32_t count, uint32_t *outFailedCount)
 {
     if (!cls) {
         if (outFailedCount) *outFailedCount = count;
@@ -7236,8 +7142,7 @@ class_addMethodsBulk(Class cls, const SEL *names, const IMP *imps,
 }
 
 void
-class_replaceMethodsBulk(Class cls, const SEL *names, const IMP *imps,
-                         const char **types, uint32_t count)
+class_replaceMethodsBulk(Class cls, const SEL *names, const IMP *imps, const char **types, uint32_t count)
 {
     if (!cls) return;
     
@@ -7252,8 +7157,7 @@ class_replaceMethodsBulk(Class cls, const SEL *names, const IMP *imps,
 * Locking: acquires runtimeLock
 **********************************************************************/
 BOOL 
-class_addIvar(Class cls, const char *name, size_t size, 
-              uint8_t alignment, const char *type)
+class_addIvar(Class cls, const char *name, size_t size, uint8_t alignment, const char *type)
 {
     if (!cls) return NO;
 
@@ -7342,8 +7246,7 @@ BOOL class_addProtocol(Class cls, Protocol *protocol_gen)
     ASSERT(cls->isRealized());
     
     // fixme optimize
-    protocol_list_t *protolist = (protocol_list_t *)
-        malloc(sizeof(protocol_list_t) + sizeof(protocol_t *));
+    protocol_list_t *protolist = (protocol_list_t *)malloc(sizeof(protocol_list_t) + sizeof(protocol_t *));
     protolist->count = 1;
     protolist->list[0] = (protocol_ref_t)protocol;
 
@@ -7361,9 +7264,7 @@ BOOL class_addProtocol(Class cls, Protocol *protocol_gen)
 * Locking: acquires runtimeLock
 **********************************************************************/
 static bool 
-_class_addProperty(Class cls, const char *name, 
-                   const objc_property_attribute_t *attrs, unsigned int count, 
-                   bool replace)
+_class_addProperty(Class cls, const char *name, const objc_property_attribute_t *attrs, unsigned int count, bool replace)
 {
     if (!cls) return NO;
     if (!name) return NO;
@@ -7386,8 +7287,7 @@ _class_addProperty(Class cls, const char *name,
         
         ASSERT(cls->isRealized());
         
-        property_list_t *proplist = (property_list_t *)
-            malloc(property_list_t::byteSize(sizeof(property_t), 1));
+        property_list_t *proplist = (property_list_t *)malloc(property_list_t::byteSize(sizeof(property_t), 1));
         proplist->count = 1;
         proplist->entsizeAndFlags = sizeof(property_t);
         proplist->begin()->name = strdupIfMutable(name);
@@ -7400,15 +7300,13 @@ _class_addProperty(Class cls, const char *name,
 }
 
 BOOL 
-class_addProperty(Class cls, const char *name, 
-                  const objc_property_attribute_t *attrs, unsigned int n)
+class_addProperty(Class cls, const char *name, const objc_property_attribute_t *attrs, unsigned int n)
 {
     return _class_addProperty(cls, name, attrs, n, NO);
 }
 
 void 
-class_replaceProperty(Class cls, const char *name, 
-                      const objc_property_attribute_t *attrs, unsigned int n)
+class_replaceProperty(Class cls, const char *name, const objc_property_attribute_t *attrs, unsigned int n)
 {
     _class_addProperty(cls, name, attrs, n, YES);
 }
@@ -7427,14 +7325,13 @@ static BOOL empty_getClass(const char *name, Class *outClass)
 
 static ChainedHookFunction<objc_hook_getClass> GetClassHook{empty_getClass};
 
-void objc_setHook_getClass(objc_hook_getClass newValue,
-                           objc_hook_getClass *outOldValue)
+void objc_setHook_getClass(objc_hook_getClass newValue, objc_hook_getClass *outOldValue)
 {
     GetClassHook.set(newValue, outOldValue);
 }
 
 Class 
-look_up_class(const char *name, 
+look_up_class(const char *name,
               bool includeUnconnected __attribute__((unused)), 
               bool includeClassHandler __attribute__((unused)))
 {
@@ -7472,12 +7369,9 @@ look_up_class(const char *name,
 
         // Save this lookup in tls.
         if (tls->classNameLookupsUsed == tls->classNameLookupsAllocated) {
-            tls->classNameLookupsAllocated =
-                (tls->classNameLookupsAllocated * 2 ?: 1);
-            size_t size = tls->classNameLookupsAllocated *
-                sizeof(tls->classNameLookups[0]);
-            tls->classNameLookups = (const char **)
-                realloc(tls->classNameLookups, size);
+            tls->classNameLookupsAllocated = (tls->classNameLookupsAllocated * 2 ?: 1);
+            size_t size = tls->classNameLookupsAllocated *sizeof(tls->classNameLookups[0]);
+            tls->classNameLookups = (const char **)realloc(tls->classNameLookups, size);
         }
         tls->classNameLookups[tls->classNameLookupsUsed++] = name;
 
@@ -7505,8 +7399,7 @@ look_up_class(const char *name,
 * Locking: acquires runtimeLock
 **********************************************************************/
 Class 
-objc_duplicateClass(Class original, const char *name, 
-                    size_t extraBytes)
+objc_duplicateClass(Class original, const char *name, size_t extraBytes)
 {
     Class duplicate;
 
@@ -7569,8 +7462,7 @@ objc_duplicateClass(Class original, const char *name,
     addClassTableEntry(duplicate, /*addMeta=*/false);
     
     if (PrintConnecting) {
-        _objc_inform("CLASS: realizing class '%s' (duplicate of %s) %p %p", 
-                     name, original->nameForLogging(), (void*)duplicate, ro);
+        _objc_inform("CLASS: realizing class '%s' (duplicate of %s) %p %p", name, original->nameForLogging(), (void*)duplicate, ro);
     }
 
     duplicate->clearInfo(RW_REALIZING);
@@ -7720,8 +7612,7 @@ Class objc_initializeClassPair(Class superclass, const char *name, Class cls, Cl
 * fixme
 * Locking: acquires runtimeLock
 **********************************************************************/
-Class objc_allocateClassPair(Class superclass, const char *name, 
-                             size_t extraBytes)
+Class objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 {
     Class cls, meta;
 
@@ -7815,8 +7706,7 @@ Class objc_readClassPair(Class bits, const struct objc_image_info *info)
     Class cls = readClass(bits, false/*bundle*/, false/*shared cache*/);
     if (cls != bits) {
         // This function isn't allowed to remap anything.
-        _objc_fatal("objc_readClassPair for class %s changed %p to %p", 
-                    cls->nameForLogging(), bits, cls);
+        _objc_fatal("objc_readClassPair for class %s changed %p to %p", cls->nameForLogging(), bits, cls);
     }
 
     // The only client of this function is old Swift.
@@ -8061,8 +7951,7 @@ id
 _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
 {
     // allocWithZone under __OBJC2__ ignores the zone parameter
-    return _class_createInstanceFromZone(cls, 0, nil,
-                                         OBJECT_CONSTRUCT_CALL_BADALLOC);
+    return _class_createInstanceFromZone(cls, 0, nil, OBJECT_CONSTRUCT_CALL_BADALLOC);
 }
 
 /***********************************************************************
@@ -8074,11 +7963,9 @@ _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone __unused)
 #warning fixme optimize class_createInstances
 #endif
 unsigned 
-class_createInstances(Class cls, size_t extraBytes, 
-                      id *results, unsigned num_requested)
+class_createInstances(Class cls, size_t extraBytes, id *results, unsigned num_requested)
 {
-    return _class_createInstancesFromZone(cls, extraBytes, nil, 
-                                          results, num_requested);
+    return _class_createInstancesFromZone(cls, extraBytes, nil, results, num_requested);
 }
 
 /***********************************************************************
@@ -8095,8 +7982,7 @@ _object_copyFromZone(id oldObj, size_t extraBytes, void *zone)
 
     Class cls = oldObj->ISA(/*authenticated*/true);
     size_t size;
-    id obj = _class_createInstanceFromZone(cls, extraBytes, zone,
-                                           OBJECT_CONSTRUCT_NONE, false, &size);
+    id obj = _class_createInstanceFromZone(cls, extraBytes, zone, OBJECT_CONSTRUCT_NONE, false, &size);
     if (!obj) return nil;
 
     // Copy everything except the isa, which was already set above.

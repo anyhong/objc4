@@ -445,12 +445,10 @@ static void object_cxxDestructFromClass(id obj, Class cls)
 
     for ( ; cls; cls = cls->getSuperclass()) {
         if (!cls->hasCxxDtor()) return; 
-        dtor = (void(*)(id))
-            lookupMethodInClassAndLoadCache(cls, SEL_cxx_destruct);
+        dtor = (void(*)(id))lookupMethodInClassAndLoadCache(cls, SEL_cxx_destruct);
         if (dtor != (void(*)(id))_objc_msgForward_impcache) {
             if (PrintCxxCtors) {
-                _objc_inform("CXX: calling C++ destructors for class %s", 
-                             cls->nameForLogging());
+                _objc_inform("CXX: calling C++ destructors for class %s", cls->nameForLogging());
             }
             (*dtor)(obj);
         }
@@ -507,8 +505,7 @@ object_cxxConstructFromClass(id obj, Class cls, int flags)
     
     // Call this class's ctor.
     if (PrintCxxCtors) {
-        _objc_inform("CXX: calling C++ constructors for class %s", 
-                     cls->nameForLogging());
+        _objc_inform("CXX: calling C++ constructors for class %s", cls->nameForLogging());
     }
     if (fastpath((*ctor)(obj))) return obj;  // ctor called and succeeded - ok
 
@@ -819,11 +816,9 @@ char * method_copyReturnType(Method m)
 }
 
 
-void method_getArgumentType(Method m, unsigned int index, 
-                            char *dst, size_t dst_len)
+void method_getArgumentType(Method m, unsigned int index, char *dst, size_t dst_len)
 {
-    encoding_getArgumentType(method_getTypeEncoding(m),
-                             index, dst, dst_len);
+    encoding_getArgumentType(method_getTypeEncoding(m), index, dst, dst_len);
 }
 
 
@@ -840,8 +835,7 @@ char * method_copyArgumentType(Method m, unsigned int index)
 * the allocated pointers in *results.
 **********************************************************************/
 unsigned
-_class_createInstancesFromZone(Class cls, size_t extraBytes, void *zone, 
-                               id *results, unsigned num_requested)
+_class_createInstancesFromZone(Class cls, size_t extraBytes, void *zone, id *results, unsigned num_requested)
 {
     unsigned num_allocated;
     if (!cls) return 0;
@@ -849,8 +843,7 @@ _class_createInstancesFromZone(Class cls, size_t extraBytes, void *zone,
     size_t size = cls->instanceSize(extraBytes);
 
     num_allocated = 
-        malloc_zone_batch_malloc((malloc_zone_t *)(zone ? zone : malloc_default_zone()), 
-                                 size, (void**)results, num_requested);
+        malloc_zone_batch_malloc((malloc_zone_t *)(zone ? zone : malloc_default_zone()), size, (void**)results, num_requested);
     for (unsigned i = 0; i < num_allocated; i++) {
         bzero(results[i], size);
     }
@@ -863,8 +856,7 @@ _class_createInstancesFromZone(Class cls, size_t extraBytes, void *zone,
         id obj = results[i];
         obj->initIsa(cls);    // fixme allow nonpointer
         if (ctor) {
-            obj = object_cxxConstructFromClass(obj, cls,
-                                               OBJECT_CONSTRUCT_FREE_ONFAILURE);
+            obj = object_cxxConstructFromClass(obj, cls, OBJECT_CONSTRUCT_FREE_ONFAILURE);
         }
         if (obj) {
             results[i-shift] = obj;
@@ -910,8 +902,7 @@ inform_duplicate(const char *name, Class oldCls, Class newCls)
 
 
 const char *
-copyPropertyAttributeString(const objc_property_attribute_t *attrs,
-                            unsigned int count)
+copyPropertyAttributeString(const objc_property_attribute_t *attrs, unsigned int count)
 {
     char *result;
     unsigned int i;

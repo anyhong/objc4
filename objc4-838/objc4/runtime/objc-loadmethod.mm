@@ -75,10 +75,7 @@ void add_class_to_loadable_list(Class cls)
     
     if (loadable_classes_used == loadable_classes_allocated) {
         loadable_classes_allocated = loadable_classes_allocated*2 + 16;
-        loadable_classes = (struct loadable_class *)
-            realloc(loadable_classes,
-                              loadable_classes_allocated *
-                              sizeof(struct loadable_class));
+        loadable_classes = (struct loadable_class *)realloc(loadable_classes, loadable_classes_allocated *sizeof(struct loadable_class));
     }
     
     loadable_classes[loadable_classes_used].cls = cls;
@@ -105,16 +102,12 @@ void add_category_to_loadable_list(Category cat)
     if (!method) return;
 
     if (PrintLoading) {
-        _objc_inform("LOAD: category '%s(%s)' scheduled for +load", 
-                     _category_getClassName(cat), _category_getName(cat));
+        _objc_inform("LOAD: category '%s(%s)' scheduled for +load", _category_getClassName(cat), _category_getName(cat));
     }
     
     if (loadable_categories_used == loadable_categories_allocated) {
         loadable_categories_allocated = loadable_categories_allocated*2 + 16;
-        loadable_categories = (struct loadable_category *)
-            realloc(loadable_categories,
-                              loadable_categories_allocated *
-                              sizeof(struct loadable_category));
+        loadable_categories = (struct loadable_category *)realloc(loadable_categories, loadable_categories_allocated *sizeof(struct loadable_category));
     }
 
     loadable_categories[loadable_categories_used].cat = cat;
@@ -138,8 +131,7 @@ void remove_class_from_loadable_list(Class cls)
             if (loadable_classes[i].cls == cls) {
                 loadable_classes[i].cls = nil;
                 if (PrintLoading) {
-                    _objc_inform("LOAD: class '%s' unscheduled for +load", 
-                                 cls->nameForLogging());
+                    _objc_inform("LOAD: class '%s' unscheduled for +load", cls->nameForLogging());
                 }
                 return;
             }
@@ -163,9 +155,7 @@ void remove_category_from_loadable_list(Category cat)
             if (loadable_categories[i].cat == cat) {
                 loadable_categories[i].cat = nil;
                 if (PrintLoading) {
-                    _objc_inform("LOAD: category '%s(%s)' unscheduled for +load",
-                                 _category_getClassName(cat), 
-                                 _category_getName(cat));
+                    _objc_inform("LOAD: category '%s(%s)' unscheduled for +load", _category_getClassName(cat), _category_getName(cat));
                 }
                 return;
             }
@@ -244,9 +234,7 @@ static bool call_category_loads(void)
         cls = _category_getClass(cat);
         if (cls  &&  cls->isLoadable()) {
             if (PrintLoading) {
-                _objc_inform("LOAD: +[%s(%s) load]\n", 
-                             cls->nameForLogging(), 
-                             _category_getName(cat));
+                _objc_inform("LOAD: +[%s(%s) load]\n", cls->nameForLogging(), _category_getName(cat));
             }
             (*load_method)(cls, @selector(load));
             cats[i].cat = nil;
@@ -269,9 +257,7 @@ static bool call_category_loads(void)
     for (i = 0; i < loadable_categories_used; i++) {
         if (used == allocated) {
             allocated = allocated*2 + 16;
-            cats = (struct loadable_category *)
-                realloc(cats, allocated *
-                                  sizeof(struct loadable_category));
+            cats = (struct loadable_category *)realloc(cats, allocated *sizeof(struct loadable_category));
         }
         cats[used++] = loadable_categories[i];
     }
@@ -294,8 +280,7 @@ static bool call_category_loads(void)
 
     if (PrintLoading) {
         if (loadable_categories_used != 0) {
-            _objc_inform("LOAD: %d categories still waiting for +load\n",
-                         loadable_categories_used);
+            _objc_inform("LOAD: %d categories still waiting for +load\n", loadable_categories_used);
         }
     }
 

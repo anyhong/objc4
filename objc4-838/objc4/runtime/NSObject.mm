@@ -74,8 +74,7 @@ OBJC_EXTERN const uint32_t objc_class_abi_version = OBJC_CLASS_ABI_VERSION_MAX;
 
 static id defaultBadAllocHandler(Class cls)
 {
-    _objc_fatal("attempt to allocate object of class '%s' failed", 
-                cls->nameForLogging());
+    _objc_fatal("attempt to allocate object of class '%s' failed", cls->nameForLogging());
 }
 
 id(*badAllocHandler)(Class) = &defaultBadAllocHandler;
@@ -138,43 +137,37 @@ uint32_t numFaults = 0;
 #define SIDE_TABLE_FLAG_MASK (SIDE_TABLE_RC_ONE-1)
 
 template<>
-void SideTable::lockTwo<DoHaveOld, DoHaveNew>
-    (SideTable *lock1, SideTable *lock2)
+void SideTable::lockTwo<DoHaveOld, DoHaveNew>(SideTable *lock1, SideTable *lock2)
 {
     spinlock_t::lockTwo(&lock1->slock, &lock2->slock);
 }
 
 template<>
-void SideTable::lockTwo<DoHaveOld, DontHaveNew>
-    (SideTable *lock1, SideTable *)
+void SideTable::lockTwo<DoHaveOld, DontHaveNew>(SideTable *lock1, SideTable *)
 {
     lock1->lock();
 }
 
 template<>
-void SideTable::lockTwo<DontHaveOld, DoHaveNew>
-    (SideTable *, SideTable *lock2)
+void SideTable::lockTwo<DontHaveOld, DoHaveNew>(SideTable *, SideTable *lock2)
 {
     lock2->lock();
 }
 
 template<>
-void SideTable::unlockTwo<DoHaveOld, DoHaveNew>
-    (SideTable *lock1, SideTable *lock2)
+void SideTable::unlockTwo<DoHaveOld, DoHaveNew>(SideTable *lock1, SideTable *lock2)
 {
     spinlock_t::unlockTwo(&lock1->slock, &lock2->slock);
 }
 
 template<>
-void SideTable::unlockTwo<DoHaveOld, DontHaveNew>
-    (SideTable *lock1, SideTable *)
+void SideTable::unlockTwo<DoHaveOld, DontHaveNew>(SideTable *lock1, SideTable *)
 {
     lock1->unlock();
 }
 
 template<>
-void SideTable::unlockTwo<DontHaveOld, DoHaveNew>
-    (SideTable *, SideTable *lock2)
+void SideTable::unlockTwo<DontHaveOld, DoHaveNew>(SideTable *, SideTable *lock2)
 {
     lock2->unlock();
 }
@@ -262,15 +255,13 @@ BOOL objc_should_deallocate(id object) {
     return YES;
 }
 
-id
-objc_retain_autorelease(id obj)
+id objc_retain_autorelease(id obj)
 {
     return objc_autorelease(objc_retain(obj));
 }
 
 
-void
-objc_storeStrong(id *location, id obj)
+void objc_storeStrong(id *location, id obj)
 {
     id prev = *location;
     if (obj == prev) {
@@ -293,10 +284,8 @@ objc_storeStrong(id *location, id obj)
 enum CrashIfDeallocating {
     DontCrashIfDeallocating = false, DoCrashIfDeallocating = true
 };
-template <HaveOld haveOld, HaveNew haveNew,
-          enum CrashIfDeallocating crashIfDeallocating>
-static id 
-storeWeak(id *location, objc_object *newObj)
+template <HaveOld haveOld, HaveNew haveNew, enum CrashIfDeallocating crashIfDeallocating>
+static id storeWeak(id *location, objc_object *newObj)
 {
     ASSERT(haveOld  ||  haveNew);
     if (!haveNew) ASSERT(newObj == nil);
@@ -334,8 +323,7 @@ storeWeak(id *location, objc_object *newObj)
     // weakly-referenced object has an un-+initialized isa.
     if (haveNew  &&  newObj) {
         Class cls = newObj->getIsa();
-        if (cls != previouslyInitializedClass  &&  
-            !((objc_class *)cls)->isInitialized()) 
+        if (cls != previouslyInitializedClass  &&  !((objc_class *)cls)->isInitialized())
         {
             SideTable::unlockTwo<haveOld, haveNew>(oldTable, newTable);
             class_initialize(cls, (id)newObj);
@@ -359,9 +347,10 @@ storeWeak(id *location, objc_object *newObj)
 
     // Assign new value, if any.
     if (haveNew) {
-        newObj = (objc_object *)
-            weak_register_no_lock(&newTable->weak_table, (id)newObj, location, 
-                                  crashIfDeallocating ? CrashIfDeallocating : ReturnNilIfDeallocating);
+        newObj = (objc_object *)weak_register_no_lock(&newTable->weak_table,
+                                                      (id)newObj,
+                                                      location,
+                                                      crashIfDeallocating ? CrashIfDeallocating : ReturnNilIfDeallocating);
         // weak_register_no_lock returns nil if weak store should be rejected
 
         // Set is-weakly-referenced bit in refcount table.
@@ -397,11 +386,9 @@ storeWeak(id *location, objc_object *newObj)
  * 
  * @return \e newObj
  */
-id
-objc_storeWeak(id *location, id newObj)
+id objc_storeWeak(id *location, id newObj)
 {
-    return storeWeak<DoHaveOld, DoHaveNew, DoCrashIfDeallocating>
-        (location, (objc_object *)newObj);
+    return storeWeak<DoHaveOld, DoHaveNew, DoCrashIfDeallocating>(location, (objc_object *)newObj);
 }
 
 
@@ -415,11 +402,9 @@ objc_storeWeak(id *location, id newObj)
  * 
  * @return The value stored (either the new object or nil)
  */
-id
-objc_storeWeakOrNil(id *location, id newObj)
+id objc_storeWeakOrNil(id *location, id newObj)
 {
-    return storeWeak<DoHaveOld, DoHaveNew, DontCrashIfDeallocating>
-        (location, (objc_object *)newObj);
+    return storeWeak<DoHaveOld, DoHaveNew, DontCrashIfDeallocating>(location, (objc_object *)newObj);
 }
 
 
@@ -439,28 +424,24 @@ objc_storeWeakOrNil(id *location, id newObj)
  * @param location Address of __weak ptr. 
  * @param newObj Object ptr. 
  */
-id
-objc_initWeak(id *location, id newObj)
+id objc_initWeak(id *location, id newObj)
 {
     if (!newObj) {
         *location = nil;
         return nil;
     }
 
-    return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>
-        (location, (objc_object*)newObj);
+    return storeWeak<DontHaveOld, DoHaveNew, DoCrashIfDeallocating>(location, (objc_object*)newObj);
 }
 
-id
-objc_initWeakOrNil(id *location, id newObj)
+id objc_initWeakOrNil(id *location, id newObj)
 {
     if (!newObj) {
         *location = nil;
         return nil;
     }
 
-    return storeWeak<DontHaveOld, DoHaveNew, DontCrashIfDeallocating>
-        (location, (objc_object*)newObj);
+    return storeWeak<DontHaveOld, DoHaveNew, DontCrashIfDeallocating>(location, (objc_object*)newObj);
 }
 
 
@@ -475,11 +456,9 @@ objc_initWeakOrNil(id *location, id newObj)
  * 
  * @param location The weak pointer address. 
  */
-void
-objc_destroyWeak(id *location)
+void objc_destroyWeak(id *location)
 {
-    (void)storeWeak<DoHaveOld, DontHaveNew, DontCrashIfDeallocating>
-        (location, nil);
+    (void)storeWeak<DoHaveOld, DontHaveNew, DontCrashIfDeallocating>(location, nil);
 }
 
 
@@ -493,8 +472,7 @@ objc_destroyWeak(id *location)
   So we now don't touch the storage until deallocation completes.
 */
 
-id
-objc_loadWeakRetained(id *location)
+id objc_loadWeakRetained(id *location)
 {
     id obj;
     id result;
@@ -563,8 +541,7 @@ objc_loadWeakRetained(id *location)
  * 
  * @return The object pointed to by \e location, or \c nil if \e location is \c nil.
  */
-id
-objc_loadWeak(id *location)
+id objc_loadWeak(id *location)
 {
     if (!*location) return nil;
     return objc_autorelease(objc_loadWeakRetained(location));
@@ -585,8 +562,7 @@ objc_loadWeak(id *location)
  * @param dst The destination variable.
  * @param src The source variable.
  */
-void
-objc_copyWeak(id *dst, id *src)
+void objc_copyWeak(id *dst, id *src)
 {
     id obj = objc_loadWeakRetained(src);
     objc_initWeak(dst, obj);
@@ -602,8 +578,7 @@ objc_copyWeak(id *dst, id *src)
  * modifications to either weak variable. (Concurrent weak clear is safe.)
  *
  */
-void
-objc_moveWeak(id *dst, id *src)
+void objc_moveWeak(id *dst, id *src)
 {
     id obj;
     SideTable *table;
@@ -703,9 +678,7 @@ private:
             !os_variant_has_internal_diagnostics("com.apple.obj-c");
         if (!objcModeNoFaults) {
             if (depth+1 >= (uint32_t)objc::PageCountWarning && numFaults < MAX_FAULTS) {  //depth is 0 when first page is allocated
-                os_fault_with_payload(OS_REASON_LIBSYSTEM,
-                        OS_REASON_LIBSYSTEM_CODE_FAULT,
-                        NULL, 0, "Large Autorelease Pool", 0);
+                os_fault_with_payload(OS_REASON_LIBSYSTEM, OS_REASON_LIBSYSTEM_CODE_FAULT, NULL, 0, "Large Autorelease Pool", 0);
                 numFaults++;
             }
         }
@@ -1243,8 +1216,7 @@ public:
 
     static void init()
     {
-        int r __unused = pthread_key_init_np(AutoreleasePoolPage::key, 
-                                             AutoreleasePoolPage::tls_dealloc);
+        int r __unused = pthread_key_init_np(AutoreleasePoolPage::key, AutoreleasePoolPage::tls_dealloc);
         ASSERT(r == 0);
     }
 
@@ -1270,8 +1242,7 @@ public:
                     goto done;
                 }
 #endif
-                _objc_inform("[%p]  %#16lx  %s",
-                             p, (unsigned long)*p, object_getClassName(*p));
+                _objc_inform("[%p]  %#16lx  %s", p, (unsigned long)*p, object_getClassName(*p));
              done:;
             }
         }
@@ -1291,10 +1262,8 @@ public:
         _objc_inform("%llu releases pending.", (unsigned long long)objects);
 
         if (haveEmptyPoolPlaceholder()) {
-            _objc_inform("[%p]  ................  PAGE (placeholder)", 
-                         EMPTY_POOL_PLACEHOLDER);
-            _objc_inform("[%p]  ################  POOL (placeholder)", 
-                         EMPTY_POOL_PLACEHOLDER);
+            _objc_inform("[%p]  ................  PAGE (placeholder)", EMPTY_POOL_PLACEHOLDER);
+            _objc_inform("[%p]  ################  POOL (placeholder)", EMPTY_POOL_PLACEHOLDER);
         }
         else {
             for (page = coldPage(); page; page = page->child) {
@@ -1345,8 +1314,7 @@ public:
                          mark, objc_thread_self());
 #if SUPPORT_AUTORELEASEPOOL_DEDUP_PTRS
             if (sumOfExtraReleases > 0) {
-                _objc_inform("POOL HIGHWATER: extra sequential autoreleases of objects: %u",
-                             sumOfExtraReleases);
+                _objc_inform("POOL HIGHWATER: extra sequential autoreleases of objects: %u", sumOfExtraReleases);
             }
 #endif
 

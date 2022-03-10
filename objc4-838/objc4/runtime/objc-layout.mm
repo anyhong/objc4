@@ -148,8 +148,7 @@ static void clear_bits(layout_bitmap bits, size_t which, size_t count)
     }
 }
 
-static void move_bits(layout_bitmap bits, size_t src, size_t dst, 
-                      size_t count)
+static void move_bits(layout_bitmap bits, size_t src, size_t dst, size_t count)
 {
     // fixme optimize for byte/word at a time
 
@@ -271,15 +270,12 @@ layout_bitmap_free(layout_bitmap bits)
 const unsigned char * 
 layout_string_create(layout_bitmap bits)
 {
-    const unsigned char *result =
-        compress_layout(bits.bits, bits.bitCount, bits.weak);
+    const unsigned char *result = compress_layout(bits.bits, bits.bitCount, bits.weak);
 
 #if DEBUG
     // paranoia: cycle to bitmap and back to string again, and compare
-    layout_bitmap check = layout_bitmap_create(result, bits.bitCount*sizeof(id), 
-                                               bits.bitCount*sizeof(id), bits.weak);
-    unsigned char *result2 = 
-        compress_layout(check.bits, check.bitCount, check.weak);
+    layout_bitmap check = layout_bitmap_create(result, bits.bitCount*sizeof(id), bits.bitCount*sizeof(id), bits.weak);
+    unsigned char *result2 = compress_layout(check.bits, check.bitCount, check.weak);
     if (result != result2  &&  0 != strcmp((char*)result, (char *)result2)) {
         layout_bitmap_print(bits);
         layout_bitmap_print(check);
@@ -334,8 +330,7 @@ layout_bitmap_grow(layout_bitmap *bits, size_t newCount)
     if (bits->bitsAllocated < newCount) {
         size_t newAllocated = bits->bitsAllocated * 2;
         if (newAllocated < newCount) newAllocated = newCount;
-        bits->bits = (uint8_t *)
-            realloc(bits->bits, (newAllocated+7) / 8);
+        bits->bits = (uint8_t *)realloc(bits->bits, (newAllocated+7) / 8);
         bits->bitsAllocated = newAllocated;
     }
     ASSERT(bits->bitsAllocated >= bits->bitCount);
@@ -402,8 +397,7 @@ layout_bitmap_slide_anywhere(layout_bitmap *bits, size_t oldPos, size_t newPos)
 * Returns YES if any of dst's bits were changed.
 **********************************************************************/
 bool
-layout_bitmap_splat(layout_bitmap dst, layout_bitmap src, 
-                    size_t oldSrcInstanceSize)
+layout_bitmap_splat(layout_bitmap dst, layout_bitmap src, size_t oldSrcInstanceSize)
 {
     bool changed;
     size_t oldSrcBitCount;
@@ -417,9 +411,7 @@ layout_bitmap_splat(layout_bitmap dst, layout_bitmap src,
     // fixme optimize for byte/word at a time
     for (bit = 0; bit < oldSrcBitCount; bit++) {
         int dstset = dst.bits[bit/8] & (1 << (bit % 8));
-        int srcset = (bit < src.bitCount) 
-            ? src.bits[bit/8] & (1 << (bit % 8))
-            : 0;
+        int srcset = (bit < src.bitCount) ? src.bits[bit/8] & (1 << (bit % 8)) : 0;
         if (dstset != srcset) {
             changed = YES;
             if (srcset) {
@@ -447,8 +439,7 @@ layout_bitmap_or(layout_bitmap dst, layout_bitmap src, const char *msg)
     size_t bit;
 
     if (dst.bitCount < src.bitCount) {
-        _objc_fatal("layout_bitmap_or: layout bitmap too short%s%s", 
-                    msg ? ": " : "", msg ? msg : "");
+        _objc_fatal("layout_bitmap_or: layout bitmap too short%s%s", msg ? ": " : "", msg ? msg : "");
     }
     
     // fixme optimize for byte/word at a time
@@ -478,8 +469,7 @@ layout_bitmap_clear(layout_bitmap dst, layout_bitmap src, const char *msg)
     size_t bit;
 
     if (dst.bitCount < src.bitCount) {
-        _objc_fatal("layout_bitmap_clear: layout bitmap too short%s%s", 
-                    msg ? ": " : "", msg ? msg : "");
+        _objc_fatal("layout_bitmap_clear: layout bitmap too short%s%s", msg ? ": " : "", msg ? msg : "");
     }
     
     // fixme optimize for byte/word at a time

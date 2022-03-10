@@ -84,8 +84,7 @@ __attribute__((objc_nonlazy_class))
                                   YES/*required*/, NO/*instance*/, 
                                   YES/*recursive*/);
 #else
-    return method_getDescription(protocol_getMethod((struct protocol_t *)self, 
-                                                    aSel, YES, NO, YES));
+    return method_getDescription(protocol_getMethod((struct protocol_t *)self, aSel, YES, NO, YES));
 #endif
 }
 

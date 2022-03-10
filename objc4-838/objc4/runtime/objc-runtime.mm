@@ -473,9 +473,7 @@ void environ_init(void)
 * OBJC_PRINT_REPLACED_METHODS implementation
 **********************************************************************/
 void 
-logReplacedMethod(const char *className, SEL s, 
-                  bool isMeta, const char *catName, 
-                  void *oldImp, void *newImp)
+logReplacedMethod(const char *className, SEL s, bool isMeta, const char *catName, void *oldImp, void *newImp)
 {
     const char *oldImage = "??";
     const char *newImage = "??";
@@ -511,8 +509,7 @@ _objc_pthread_data *_objc_fetch_pthread_data(bool create)
 
     data = (_objc_pthread_data *)tls_get(_objc_pthread_key);
     if (!data  &&  create) {
-        data = (_objc_pthread_data *)
-            calloc(1, sizeof(_objc_pthread_data));
+        data = (_objc_pthread_data *)calloc(1, sizeof(_objc_pthread_data));
         tls_set(_objc_pthread_key, data);
     }
 
@@ -632,8 +629,7 @@ static BOOL internal_class_getImageName(Class cls, const char **outName)
 static ChainedHookFunction<objc_hook_getImageName>
 GetImageNameHook{internal_class_getImageName};
 
-void objc_setHook_getImageName(objc_hook_getImageName newValue,
-                               objc_hook_getImageName *outOldValue)
+void objc_setHook_getImageName(objc_hook_getImageName newValue, objc_hook_getImageName *outOldValue)
 {
     GetImageNameHook.set(newValue, outOldValue);
 }
@@ -981,8 +977,7 @@ static int sliceRequiresGC(typename Arch::mh_t mh, FileSlice file)
                     if (!sections.pread(&sect, sizeof(sect))) return Error;
                     if (!Arch::isObjCSegment(sect.segname)) return Error;
 
-                    if (!Arch::countClasses(file, sect, 
-                                            classCount, classrefCount)) 
+                    if (!Arch::countClasses(file, sect, classCount, classrefCount)) 
                     {
                         return Error;
                     }

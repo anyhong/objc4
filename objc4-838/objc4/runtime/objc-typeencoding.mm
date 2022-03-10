@@ -33,11 +33,10 @@
 *
 * Delegation.
 **********************************************************************/
-static int	SubtypeUntil	       (const char *	type,
-                                char		end)
+static int	SubtypeUntil (const char *type, char end)
 {
     int		level = 0;
-    const char *	head = type;
+    const char *head = type;
 
     //
     while (*type)
@@ -62,7 +61,7 @@ static int	SubtypeUntil	       (const char *	type,
 /***********************************************************************
 * SkipFirstType.
 **********************************************************************/
-static const char *	SkipFirstType	   (const char *	type)
+static const char *	SkipFirstType(const char *type)
 {
     while (1)
     {
@@ -167,8 +166,7 @@ encoding_getSizeOfArguments(const char *typedesc)
 * encoding_getArgumentInfo.
 **********************************************************************/
 unsigned int 
-encoding_getArgumentInfo(const char *typedesc, unsigned int arg,
-                         const char **type, int *offset)
+encoding_getArgumentInfo(const char *typedesc, unsigned int arg, const char **type, int *offset)
 {
     unsigned nargs = 0;
     int self_offset = 0;
@@ -311,8 +309,7 @@ encoding_copyReturnType(const char *t)
 
 
 void 
-encoding_getArgumentType(const char *t, unsigned int index, 
-                         char *dst, size_t dst_len)
+encoding_getArgumentType(const char *t, unsigned int index, char *dst, size_t dst_len)
 {
     size_t len;
     const char *end;

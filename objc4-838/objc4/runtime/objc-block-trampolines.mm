@@ -116,21 +116,16 @@ class TrampolinePointerWrapper {
 #if DEBUG
             ASSERT(impl.address() == textSegment + TRAMPOLINE_PAGE_SIZE);
             ASSERT(impl.address() % PAGE_SIZE == 0);  // not TRAMPOLINE_PAGE_SIZE
-            ASSERT(impl.address() + TRAMPOLINE_PAGE_SIZE ==
-                   last.address() + SLOT_SIZE);
+            ASSERT(impl.address() + TRAMPOLINE_PAGE_SIZE == last.address() + SLOT_SIZE);
             ASSERT(last.address()+8 < textSegment + textSegmentSize);
             ASSERT((last.address() - start.address()) % SLOT_SIZE == 0);
 # if SUPPORT_STRET
             ASSERT(impl_stret.address() == textSegment + 2*TRAMPOLINE_PAGE_SIZE);
             ASSERT(impl_stret.address() % PAGE_SIZE == 0);  // not TRAMPOLINE_PAGE_SIZE
-            ASSERT(impl_stret.address() + TRAMPOLINE_PAGE_SIZE ==
-                   last_stret.address() + SLOT_SIZE);
-            ASSERT(start.address() - impl.address() ==
-                   start_stret.address() - impl_stret.address());
-            ASSERT(last_stret.address() + SLOT_SIZE <
-                   textSegment + textSegmentSize);
-            ASSERT((last_stret.address() - start_stret.address())
-                   % SLOT_SIZE == 0);
+            ASSERT(impl_stret.address() + TRAMPOLINE_PAGE_SIZE == last_stret.address() + SLOT_SIZE);
+            ASSERT(start.address() - impl.address() == start_stret.address() - impl_stret.address());
+            ASSERT(last_stret.address() + SLOT_SIZE < textSegment + textSegmentSize);
+            ASSERT((last_stret.address() - start_stret.address()) % SLOT_SIZE == 0);
 # endif
 #endif
         }
@@ -148,11 +143,9 @@ class TrampolinePointerWrapper {
 # endif
 #endif
         {
-            const auto *mh =
-                dyld_image_header_containing_address((void *)impl.address());
+            const auto *mh = dyld_image_header_containing_address((void *)impl.address());
             unsigned long size = 0;
-            textSegment = (uintptr_t)
-                getsegmentdata((headerType *)mh, "__TEXT", &size);
+            textSegment = (uintptr_t)getsegmentdata((headerType *)mh, "__TEXT", &size);
             textSegmentSize = size;
 
             check();
@@ -171,11 +164,9 @@ public:
 
         // This code may be called concurrently.
         // In the worst case we perform extra dyld operations.
-        void *dylib = dlopen("/usr/lib/libobjc-trampolines.dylib",
-                             RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
+        void *dylib = dlopen("/usr/lib/libobjc-trampolines.dylib", RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
         if (!dylib) {
-            _objc_fatal("couldn't dlopen libobjc-trampolines.dylib: %s",
-                        dlerror());
+            _objc_fatal("couldn't dlopen libobjc-trampolines.dylib: %s", dlerror());
         }
 
         auto t = new TrampolinePointers(dylib);
@@ -304,8 +295,7 @@ struct TrampolineBlockPageGroup
         if (!validIndex(index))
             _objc_fatal("Trampoline block %p, requested invalid index %" PRIuPTR, this, index);
 #if __has_feature(ptrauth_calls)
-        imp = ptrauth_sign_unauthenticated(imp,
-                                           ptrauth_key_function_pointer, 0);
+        imp = ptrauth_sign_unauthenticated(imp, ptrauth_key_function_pointer, 0);
 #endif
         return (IMP)imp;
     }
@@ -368,9 +358,7 @@ static TrampolineBlockPageGroup *_allocateTrampolinesAndData()
 
     // Allocate a single contiguous region big enough to hold data+text.
     kern_return_t result;
-    result = vm_allocate(mach_task_self(), &dataAddress,
-                         dataSize + textSourceSize,
-                         VM_FLAGS_ANYWHERE | VM_MAKE_TAG(VM_MEMORY_FOUNDATION));
+    result = vm_allocate(mach_task_self(), &dataAddress, dataSize + textSourceSize, VM_FLAGS_ANYWHERE | VM_MAKE_TAG(VM_MEMORY_FOUNDATION));
     if (result != KERN_SUCCESS) {
         _objc_fatal("vm_allocate trampolines failed (%d)", result);
     }
@@ -428,9 +416,7 @@ pageAndIndexContainingIMP(IMP anImp, uintptr_t *outIndex)
     runtimeLock.assertLocked();
 
     // Authenticate as a function pointer, returning an un-signed address.
-    uintptr_t trampAddress =
-            (uintptr_t)ptrauth_auth_data((const char *)anImp,
-                                         ptrauth_key_function_pointer, 0);
+    uintptr_t trampAddress = (uintptr_t)ptrauth_auth_data((const char *)anImp, ptrauth_key_function_pointer, 0);
 
     for (TrampolineBlockPageGroup *pageGroup = HeadPageGroup; 
          pageGroup;
@@ -494,8 +480,7 @@ _imp_implementationWithBlockNoCopy(id block)
 {
     runtimeLock.assertLocked();
 
-    TrampolineBlockPageGroup *pageGroup = 
-        getOrAllocatePageGroupWithNextAvailable();
+    TrampolineBlockPageGroup *pageGroup = getOrAllocatePageGroupWithNextAvailable();
 
     uintptr_t index = pageGroup->nextAvailable;
     ASSERT(index >= pageGroup->startIndex()  &&  index < pageGroup->endIndex());
@@ -577,8 +562,7 @@ BOOL imp_removeBlock(IMP anImp) {
         mutex_locker_t lock(runtimeLock);
     
         uintptr_t index;
-        TrampolineBlockPageGroup *pageGroup =
-            pageAndIndexContainingIMP(anImp, &index);
+        TrampolineBlockPageGroup *pageGroup = pageAndIndexContainingIMP(anImp, &index);
         
         if (!pageGroup) {
             return NO;

@@ -106,13 +106,13 @@ NXMapTable *NXCreateMapTableFromZone(NXMapTablePrototype prototype, unsigned cap
     NXMapTablePrototype		*proto;
     if (! prototypes) prototypes = NXCreateHashTable(protoPrototype, 0, NULL);
     if (! prototype.hash || ! prototype.isEqual || ! prototype.free || prototype.style) {
-	_objc_inform("*** NXCreateMapTable: invalid creation parameters\n");
-	return NULL;
+        _objc_inform("*** NXCreateMapTable: invalid creation parameters\n");
+        return NULL;
     }
     proto = (NXMapTablePrototype *)NXHashGet(prototypes, &prototype); 
     if (! proto) {
-	proto = (NXMapTablePrototype *)malloc(sizeof(NXMapTablePrototype));
-	*proto = prototype;
+        proto = (NXMapTablePrototype *)malloc(sizeof(NXMapTablePrototype));
+        *proto = prototype;
     	(void)NXHashInsert(prototypes, proto);
     }
     table->prototype = proto; table->count = 0;
@@ -136,11 +136,11 @@ void NXResetMapTable(NXMapTable *table) {
     void	(*freeProc)(struct _NXMapTable *, void *, void *) = table->prototype->free;
     unsigned	index = table->nbBucketsMinusOne + 1;
     while (index--) {
-	if (pairs->key != NX_MAPNOTAKEY) {
-	    freeProc(table, (void *)pairs->key, (void *)pairs->value);
-	    pairs->key = NX_MAPNOTAKEY; pairs->value = NULL;
-	}
-	pairs++;
+        if (pairs->key != NX_MAPNOTAKEY) {
+            freeProc(table, (void *)pairs->key, (void *)pairs->value);
+            pairs->key = NX_MAPNOTAKEY; pairs->value = NULL;
+        }
+        pairs++;
     }
     table->count = 0;
 }

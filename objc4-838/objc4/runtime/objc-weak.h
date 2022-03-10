@@ -102,8 +102,7 @@ struct weak_entry_t {
         return *this;
     }
 
-    weak_entry_t(objc_object *newReferent, objc_object **newReferrer)
-        : referent(newReferent)
+    weak_entry_t(objc_object *newReferent, objc_object **newReferrer) : referent(newReferent)
     {
         inline_referrers[0] = newReferrer;
         for (int i = 1; i < WEAK_INLINE_COUNT; i++) {

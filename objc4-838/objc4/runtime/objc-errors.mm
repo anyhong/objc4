@@ -203,8 +203,7 @@ void _objc_fatalv(uint64_t reason, uint64_t flags, const char *fmt, va_list ap)
     }
 }
 
-void _objc_fatal_with_reason(uint64_t reason, uint64_t flags, 
-                             const char *fmt, ...)
+void _objc_fatal_with_reason(uint64_t reason, uint64_t flags, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -215,9 +214,7 @@ void _objc_fatal(const char *fmt, ...)
 {
     va_list ap; 
     va_start(ap,fmt); 
-    _objc_fatalv(OBJC_EXIT_REASON_UNSPECIFIED, 
-                 OS_REASON_FLAG_ONE_TIME_FAILURE, 
-                 fmt, ap);
+    _objc_fatalv(OBJC_EXIT_REASON_UNSPECIFIED, OS_REASON_FLAG_ONE_TIME_FAILURE, fmt, ap);
 }
 
 /*

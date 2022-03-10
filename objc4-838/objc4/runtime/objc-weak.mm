@@ -73,8 +73,7 @@ static inline uintptr_t w_hash_pointer(objc_object **key) {
  * @param entry Weak pointer hash set for a particular object.
  */
 __attribute__((noinline, used))
-static void grow_refs_and_insert(weak_entry_t *entry, 
-                                 objc_object **new_referrer)
+static void grow_refs_and_insert(weak_entry_t *entry, objc_object **new_referrer)
 {
     ASSERT(entry->out_of_line());
 
@@ -345,8 +344,7 @@ weak_entry_for_referent(weak_table_t *weak_table, objc_object *referent)
  * @param referrer The weak reference.
  */
 void
-weak_unregister_no_lock(weak_table_t *weak_table, id referent_id, 
-                        id *referrer_id)
+weak_unregister_no_lock(weak_table_t *weak_table, id referent_id, id *referrer_id)
 {
     objc_object *referent = (objc_object *)referent_id;
     objc_object **referrer = (objc_object **)referrer_id;
@@ -388,8 +386,10 @@ weak_unregister_no_lock(weak_table_t *weak_table, id referent_id,
  * @param referrer The weak pointer address.
  */
 id 
-weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
-                      id *referrer_id, WeakRegisterDeallocatingOptions deallocatingOptions)
+weak_register_no_lock(weak_table_t *weak_table,
+                      id referent_id,
+                      id *referrer_id,
+                      WeakRegisterDeallocatingOptions deallocatingOptions)
 {
     objc_object *referent = (objc_object *)referent_id;
     objc_object **referrer = (objc_object **)referrer_id;
@@ -408,8 +408,7 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
             // class_getInstanceMethod, since we intentionally make this
             // callout with the lock held.
             auto allowsWeakReference = (BOOL(*)(objc_object *, SEL))
-            lookUpImpOrForwardTryCache((id)referent, @selector(allowsWeakReference),
-                                       referent->getIsa());
+            lookUpImpOrForwardTryCache((id)referent, @selector(allowsWeakReference), referent->getIsa());
             if ((IMP)allowsWeakReference == _objc_msgForward) {
                 return nil;
             }

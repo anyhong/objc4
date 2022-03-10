@@ -144,8 +144,7 @@ static _objc_initializing_classes *_fetchInitializingClassList(bool create)
         if (!create) {
             return nil;
         } else {
-            list = (_objc_initializing_classes *)
-                calloc(1, sizeof(_objc_initializing_classes));
+            list = (_objc_initializing_classes *)calloc(1, sizeof(_objc_initializing_classes));
             data->initializingClasses = list;
         }
     }
@@ -156,8 +155,7 @@ static _objc_initializing_classes *_fetchInitializingClassList(bool create)
         // even if create == NO.
         // Allow 4 simultaneous class inits on this thread before realloc.
         list->classesAllocated = 4;
-        classes = (Class *)
-            calloc(list->classesAllocated, sizeof(Class));
+        classes = (Class *)calloc(list->classesAllocated, sizeof(Class));
         list->metaclasses = classes;
     }
     return list;
@@ -232,9 +230,7 @@ static void _setThisThreadIsInitializingClass(Class cls)
 
     // class list is full - reallocate
     list->classesAllocated = list->classesAllocated * 2 + 1;
-    list->metaclasses = (Class *) 
-        realloc(list->metaclasses,
-                          list->classesAllocated * sizeof(Class));
+    list->metaclasses = (Class *)realloc(list->metaclasses, list->classesAllocated * sizeof(Class));
     // zero out the new entries
     list->metaclasses[i++] = cls;
     for ( ; i < list->classesAllocated; i++) {
@@ -291,8 +287,7 @@ static void _finishInitializing(Class cls, Class supercls)
     ASSERT(!supercls  ||  supercls->isInitialized());
 
     if (PrintInitializing) {
-        _objc_inform("INITIALIZE: thread %p: %s is fully +initialized",
-                     objc_thread_self(), cls->nameForLogging());
+        _objc_inform("INITIALIZE: thread %p: %s is fully +initialized", objc_thread_self(), cls->nameForLogging());
     }
 
     // mark this class as fully +initialized
@@ -554,8 +549,7 @@ void initializeNonMetaClass(Class cls)
             callInitialize(cls);
 
             if (PrintInitializing) {
-                _objc_inform("INITIALIZE: thread %p: finished +[%s initialize]",
-                             objc_thread_self(), cls->nameForLogging());
+                _objc_inform("INITIALIZE: thread %p: finished +[%s initialize]", objc_thread_self(), cls->nameForLogging());
             }
         }
 #if __OBJC2__

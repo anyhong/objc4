@@ -414,8 +414,7 @@ void cache_t::initializeToPreoptCacheInDisguise(const preopt_cache_t *cache)
     // preopt_cache_t::bit_one is 1 which sets the top bit
     // and is never set on any valid selector
 
-    uintptr_t value = (uintptr_t)cache + sizeof(preopt_cache_t) -
-            (bucket_t::offsetOfSel() + sizeof(SEL));
+    uintptr_t value = (uintptr_t)cache + sizeof(preopt_cache_t) - (bucket_t::offsetOfSel() + sizeof(SEL));
 
     _originalPreoptCache.store(nullptr, std::memory_order_relaxed);
     setBucketsAndMask((bucket_t *)value, 0);
@@ -442,8 +441,7 @@ void cache_t::maybeConvertToPreoptimized()
 
     uintptr_t value = (uintptr_t)&cache->entries;
 #if __has_feature(ptrauth_calls)
-    value = (uintptr_t)ptrauth_sign_unauthenticated((void *)value,
-            ptrauth_key_process_dependent_data, (uintptr_t)cls());
+    value = (uintptr_t)ptrauth_sign_unauthenticated((void *)value, ptrauth_key_process_dependent_data, (uintptr_t)cls());
 #endif
     value |= preoptBucketsHashParams(cache) | preoptBucketsMarker;
     _bucketsAndMaybeMask.store(value, memory_order_relaxed);
@@ -479,12 +477,9 @@ const preopt_cache_t *cache_t::preopt_cache(MAYBE_UNUSED_AUTHENTICATED_PARAM boo
     addr &= preoptBucketsMask;
 #if __has_feature(ptrauth_calls)
     if (authenticated)
-        addr = (uintptr_t)ptrauth_auth_data((preopt_cache_entry_t *)addr,
-                                            ptrauth_key_process_dependent_data,
-                                            (uintptr_t)cls());
+        addr = (uintptr_t)ptrauth_auth_data((preopt_cache_entry_t *)addr, ptrauth_key_process_dependent_data, (uintptr_t)cls());
     else
-        addr = (uintptr_t)ptrauth_strip((preopt_cache_entry_t *)addr,
-                                        ptrauth_key_process_dependent_data);
+        addr = (uintptr_t)ptrauth_strip((preopt_cache_entry_t *)addr, ptrauth_key_process_dependent_data);
 #endif
     return (preopt_cache_t *)(addr - sizeof(preopt_cache_t));
 }
@@ -730,8 +725,7 @@ bucket_t *cache_t::emptyBucketsForCapacity(mask_t capacity, bool allocate)
 
         mask_t newListCount = index + 1;
         bucket_t *newBuckets = (bucket_t *)calloc(bytes, 1);
-        emptyBucketsList = (bucket_t**)
-            realloc(emptyBucketsList, newListCount * sizeof(bucket_t *));
+        emptyBucketsList = (bucket_t**)realloc(emptyBucketsList, newListCount * sizeof(bucket_t *));
         // Share newBuckets for every un-allocated size smaller than index.
         // The array is therefore always fully populated.
         for (mask_t i = emptyBucketsListCount; i < newListCount; i++) {
@@ -740,8 +734,7 @@ bucket_t *cache_t::emptyBucketsForCapacity(mask_t capacity, bool allocate)
         emptyBucketsListCount = newListCount;
 
         if (PrintCaches) {
-            _objc_inform("CACHES: new empty buckets at %p (capacity %zu)", 
-                         newBuckets, (size_t)capacity);
+            _objc_inform("CACHES: new empty buckets at %p (capacity %zu)", newBuckets, (size_t)capacity);
         }
     }
 
@@ -816,12 +809,9 @@ void cache_t::bad_cache(id receiver, SEL sel)
 #else
 #error Unknown cache mask storage type.
 #endif
-    _objc_inform_now_and_on_crash
-        ("selector '%s'", sel_getName(sel));
-    _objc_inform_now_and_on_crash
-        ("isa '%s'", cls()->nameForLogging());
-    _objc_fatal
-        ("Method cache corrupted. This may be a message to an "
+    _objc_inform_now_and_on_crash("selector '%s'", sel_getName(sel));
+    _objc_inform_now_and_on_crash("isa '%s'", cls()->nameForLogging());
+    _objc_fatal("Method cache corrupted. This may be a message to an "
          "invalid object, or a memory error somewhere else.");
 }
 
@@ -835,8 +825,7 @@ void cache_t::insert(SEL sel, IMP imp, id receiver)
     }
 
     if (isConstantOptimizedCache()) {
-        _objc_fatal("cache_t::insert() called with a preoptimized cache for %s",
-                    cls()->nameForLogging());
+        _objc_fatal("cache_t::insert() called with a preoptimized cache for %s", cls()->nameForLogging());
     }
 
 #if DEBUG_TASK_THREADS
@@ -1063,11 +1052,9 @@ void cache_t::init()
         count++;
     }
 
-    kr = task_restartable_ranges_register(mach_task_self(),
-                                          objc_restartableRanges, count);
+    kr = task_restartable_ranges_register(mach_task_self(), objc_restartableRanges, count);
     if (kr == KERN_SUCCESS) return;
-    _objc_fatal("task_restartable_ranges_register failed (result 0x%x: %s)",
-                kr, mach_error_string(kr));
+    _objc_fatal("task_restartable_ranges_register failed (result 0x%x: %s)", kr, mach_error_string(kr));
 #endif // HAVE_TASK_RESTARTABLE_RANGES
 }
 
@@ -1080,8 +1067,7 @@ static int _collecting_in_critical(void)
     if (shouldUseRestartableRanges) {
         kern_return_t kr = task_restartable_ranges_synchronize(mach_task_self());
         if (kr == KERN_SUCCESS) return FALSE;
-        _objc_fatal("task_restartable_ranges_synchronize failed (result 0x%x: %s)",
-                    kr, mach_error_string(kr));
+        _objc_fatal("task_restartable_ranges_synchronize failed (result 0x%x: %s)", kr, mach_error_string(kr));
     }
 #endif // !HAVE_TASK_RESTARTABLE_RANGES
 
@@ -1199,16 +1185,14 @@ static void _garbage_make_room(void)
     if (first)
     {
         first = 0;
-        garbage_refs = (bucket_t**)
-            malloc(INIT_GARBAGE_COUNT * sizeof(void *));
+        garbage_refs = (bucket_t**)malloc(INIT_GARBAGE_COUNT * sizeof(void *));
         garbage_max = INIT_GARBAGE_COUNT;
     }
 
     // Double the table if it is full
     else if (garbage_count == garbage_max)
     {
-        garbage_refs = (bucket_t**)
-            realloc(garbage_refs, garbage_max * 2 * sizeof(void *));
+        garbage_refs = (bucket_t**)realloc(garbage_refs, garbage_max * 2 * sizeof(void *));
         garbage_max *= 2;
     }
 }
@@ -1319,15 +1303,13 @@ void cache_t::collectNolock(bool collectALot)
 
             if (!count) continue;
 
-            _objc_inform("CACHES: %4d slots: %4d caches, %6zu bytes", 
-                         slots, count, size);
+            _objc_inform("CACHES: %4d slots: %4d caches, %6zu bytes", slots, count, size);
 
             total_count += count;
             total_size += size;
         }
 
-        _objc_inform("CACHES:      total: %4zu caches, %6zu bytes", 
-                     total_count, total_size);
+        _objc_inform("CACHES:      total: %4zu caches, %6zu bytes", total_count, total_size);
     }
 }
 

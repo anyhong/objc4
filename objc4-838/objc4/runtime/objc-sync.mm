@@ -83,8 +83,7 @@ static SyncCache *fetch_cache(bool create)
             return NULL;
         } else {
             int count = 4;
-            data->syncCache = (SyncCache *)
-                calloc(1, sizeof(SyncCache) + count*sizeof(SyncCacheItem));
+            data->syncCache = (SyncCache *)calloc(1, sizeof(SyncCache) + count*sizeof(SyncCacheItem));
             data->syncCache->allocated = count;
         }
     }
@@ -92,9 +91,7 @@ static SyncCache *fetch_cache(bool create)
     // Make sure there's at least one open slot in the list.
     if (data->syncCache->allocated == data->syncCache->used) {
         data->syncCache->allocated *= 2;
-        data->syncCache = (SyncCache *)
-            realloc(data->syncCache, sizeof(SyncCache) 
-                    + data->syncCache->allocated * sizeof(SyncCacheItem));
+        data->syncCache = (SyncCache *)realloc(data->syncCache, sizeof(SyncCache) + data->syncCache->allocated * sizeof(SyncCacheItem));
     }
 
     return data->syncCache;

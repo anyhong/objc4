@@ -574,14 +574,12 @@ void objc_exception_throw(id obj)
     exc->tinfo.cls_unremapped = obj ? obj->getIsa() : Nil;
 
     if (PrintExceptions) {
-        _objc_inform("EXCEPTIONS: throwing %p (object %p, a %s)", 
-                     exc, (void*)obj, object_getClassName(obj));
+        _objc_inform("EXCEPTIONS: throwing %p (object %p, a %s)", exc, (void*)obj, object_getClassName(obj));
     }
 
     if (PrintExceptionThrow) {
         if (!PrintExceptions)
-            _objc_inform("EXCEPTIONS: throwing %p (object %p, a %s)", 
-                         exc, (void*)obj, object_getClassName(obj));
+            _objc_inform("EXCEPTIONS: throwing %p (object %p, a %s)", exc, (void*)obj, object_getClassName(obj));
         void* callstack[500];
         int frameCount = backtrace(callstack, 500);
         backtrace_symbols_fd(callstack, frameCount, fileno(stderr));
@@ -609,8 +607,7 @@ void objc_exception_rethrow(void)
 id objc_begin_catch(void *exc_gen)
 {
     if (PrintExceptions) {
-        _objc_inform("EXCEPTIONS: handling exception %p at %p", 
-                     exc_gen, __builtin_return_address(0));
+        _objc_inform("EXCEPTIONS: handling exception %p at %p", exc_gen, __builtin_return_address(0));
     }
     // NOT actually an id in the catch(...) case!
     return (id)__cxa_begin_catch(exc_gen);
@@ -658,13 +655,11 @@ bool _objc_exception_do_catch(struct objc_typeinfo *catch_tinfo,
         // catch handler's class is weak-linked and missing. Not a match.
     }
     else if ((*exception_matcher)(handler_cls, exception)) {
-        if (PrintExceptions) _objc_inform("EXCEPTIONS: catch(%s)", 
-                                          handler_cls->nameForLogging());
+        if (PrintExceptions) _objc_inform("EXCEPTIONS: catch(%s)", handler_cls->nameForLogging());
         return true;
     }
 
-    if (PrintExceptions) _objc_inform("EXCEPTIONS: skipping catch(%s)", 
-                                      handler_cls->nameForLogging());
+    if (PrintExceptions) _objc_inform("EXCEPTIONS: skipping catch(%s)", handler_cls->nameForLogging());
 
     return false;
 }
@@ -1173,8 +1168,7 @@ uintptr_t objc_addExceptionHandler(objc_exception_handler fn, void *context)
     if (list->used == list->allocated) {
         list->allocated = list->allocated*2 ?: 4;
         list->handlers = (struct alt_handler_data *)
-            realloc(list->handlers, 
-                              list->allocated * sizeof(list->handlers[0]));
+            realloc(list->handlers, list->allocated * sizeof(list->handlers[0]));
         bzero(&list->handlers[list->used], (list->allocated - list->used) * sizeof(list->handlers[0]));
         i = list->used;
     }
@@ -1209,18 +1203,14 @@ uintptr_t objc_addExceptionHandler(objc_exception_handler fn, void *context)
         if (token == 0) token = DebugCounter++;
 
         if (!data->debug) {
-            data->debug = (struct alt_handler_debug *)
-                calloc(sizeof(*data->debug), 1);
+            data->debug = (struct alt_handler_debug *)calloc(sizeof(*data->debug), 1);
         } else {
             bzero(data->debug, sizeof(*data->debug));
         }
 
         pthread_getname_np(objc_thread_self(), data->debug->thread, THREADNAME_COUNT);
-        strlcpy(data->debug->queue,
-                dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL),
-                THREADNAME_COUNT);
-        data->debug->backtraceSize = 
-            backtrace(data->debug->backtrace, BACKTRACE_COUNT);
+        strlcpy(data->debug->queue, dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), THREADNAME_COUNT);
+        data->debug->backtraceSize = backtrace(data->debug->backtrace, BACKTRACE_COUNT);
         data->debug->token = token;
     }
 
@@ -1236,8 +1226,7 @@ uintptr_t objc_addExceptionHandler(objc_exception_handler fn, void *context)
                 uintptr_t end = data->frame.ips[r].end;
                 r++;
                 if (start == 0  &&  end == 0) break;
-                _objc_inform("ALT HANDLERS:     ip=%p..%p", 
-                             (void*)start, (void*)end);
+                _objc_inform("ALT HANDLERS:     ip=%p..%p", (void*)start, (void*)end);
             }
         }
     }
@@ -1331,9 +1320,7 @@ void alt_handler_error(uintptr_t token)
                     
                     // Build a string from the recorded backtrace
                     char *symbolString;
-                    char **symbols = 
-                        backtrace_symbols(data->debug->backtrace, 
-                                          data->debug->backtraceSize);
+                    char **symbols = backtrace_symbols(data->debug->backtrace, data->debug->backtraceSize);
                     size_t len = 1;
                     for (i = 0; i < data->debug->backtraceSize; i++){
                         len += 4 + strlen(symbols[i]) + 1;

@@ -79,8 +79,7 @@ uint32_t *getLibobjcInitializerOffsets(const headerType *mhdr, size_t *outCount)
 objc_image_info *
 _getObjcImageInfo(const headerType *mhdr, size_t *outBytes)
 {
-    return getDataSection<objc_image_info>(mhdr, "__objc_imageinfo", 
-                                           outBytes, nil);
+    return getDataSection<objc_image_info>(mhdr, "__objc_imageinfo", outBytes, nil);
 }
 
 // Look for an __objc* section other than __objc_imageinfo

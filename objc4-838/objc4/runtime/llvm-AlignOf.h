@@ -140,8 +140,7 @@ LLVM_ALIGNEDCHARARRAY_TEMPLATE_ALIGNMENT(8192);
 /// produce a union type containing a character array which, when used, forms
 /// storage suitable to placement new any of these types over. Support for more
 /// than four types can be added at the cost of more boiler plate.
-template <typename T1,
-          typename T2 = char, typename T3 = char, typename T4 = char>
+template <typename T1, typename T2 = char, typename T3 = char, typename T4 = char>
 union AlignedCharArrayUnion {
 private:
   class AlignerImpl {

@@ -922,8 +922,7 @@ class SmallDenseMap
   // simplicity of referring to them.
   using BaseT = DenseMapBase<SmallDenseMap, KeyT, ValueT, ValueInfoT, KeyInfoT, BucketT>;
 
-  static_assert(powerof2(InlineBuckets),
-                "InlineBuckets must be a power of 2.");
+  static_assert(powerof2(InlineBuckets), "InlineBuckets must be a power of 2.");
 
   unsigned Small : 1;
   unsigned NumEntries : 31;
@@ -1090,8 +1089,7 @@ public:
       for (BucketT *P = getBuckets(), *E = P + InlineBuckets; P != E; ++P) {
         if (!KeyInfoT::isEqual(P->getFirst(), EmptyKey) &&
             !KeyInfoT::isEqual(P->getFirst(), TombstoneKey)) {
-          assert(size_t(TmpEnd - TmpBegin) < InlineBuckets &&
-                 "Too many inline buckets!");
+          assert(size_t(TmpEnd - TmpBegin) < InlineBuckets && "Too many inline buckets!");
           ::new (&TmpEnd->getFirst()) KeyT(std::move(P->getFirst()));
           ::new (&TmpEnd->getSecond()) ValueT(std::move(P->getSecond()));
           ++TmpEnd;

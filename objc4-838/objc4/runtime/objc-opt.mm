@@ -165,8 +165,7 @@ struct objc_headeropt_ro_t {
         for (uint32_t i = 0; i < count; i++) {
             header_info &hi = get(i);
             if (mhdr == hi.mhdr()) {
-                _objc_fatal("failed to find header %p (%d/%d)",
-                            mhdr, i, count);
+                _objc_fatal("failed to find header %p (%d/%d)", mhdr, i, count);
             }
         }
 #endif
@@ -421,8 +420,7 @@ Class getPreoptimizedClassesWithMetaClass(Class metacls)
     Class cls = nil;
     // Note, we have to pass the lambda directly here as otherwise we would try
     // message copy and autorelease.
-    _dyld_for_each_objc_class(metacls->mangledName(),
-                              [&cls, metacls](void* classPtr, bool isLoaded, bool* stop) {
+    _dyld_for_each_objc_class(metacls->mangledName(), [&cls, metacls](void* classPtr, bool isLoaded, bool* stop) {
         // Skip images which aren't loaded.  This supports the case where dyld
         // might soft link an image from the main binary so its possibly not
         // loaded yet.
@@ -464,8 +462,7 @@ header_info_rw *getPreoptimizedHeaderRW(const struct header_info *const hdr)
     objc_headeropt_ro_t *hinfoRO = opt ? opt->headeropt_ro() : nil;
     objc_headeropt_rw_t *hinfoRW = opt ? opt->headeropt_rw() : nil;
     if (!hinfoRO || !hinfoRW) {
-        _objc_fatal("preoptimized header_info missing for %s (%p %p %p)",
-                    hdr->fname(), hdr, hinfoRO, hinfoRW);
+        _objc_fatal("preoptimized header_info missing for %s (%p %p %p)", hdr->fname(), hdr, hinfoRO, hinfoRW);
     }
     int32_t index = hinfoRO->index(hdr);
     ASSERT(hinfoRW->entsize == sizeof(header_info_rw));
@@ -496,8 +493,7 @@ void preopt_init(void)
         // This shouldn't happen. You probably forgot to edit objc-sel-table.s.
         // If dyld really did write the wrong optimization version, 
         // then we must halt because we don't know what bits dyld twiddled.
-        _objc_fatal("bad objc preopt version (want %d, got %d)", 
-                    objc_opt::VERSION, opt->version);
+        _objc_fatal("bad objc preopt version (want %d, got %d)", objc_opt::VERSION, opt->version);
     }
     else if (!opt->headeropt_ro()) {
         // One of the tables is missing. 
