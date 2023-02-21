@@ -741,9 +741,9 @@ foreach_realized_class(bool (^code)(Class) __attribute((noescape)))
 namespace objc {
 
 enum SelectorBundle {
-    AWZ,
-    RR,
-    Core,
+    AWZ, // 顾名思义是 allocWithZone 的缩写,包含alloc/allocWithZone方法
+    RR, // 是 retain release 的缩写，主要包含 retain/release/autorelease方法
+    Core, // 是OC对象核心的一些方法,包含new/self/class/respondsToSelector/isKindOfClass方法
 };
 
 namespace scanner {
@@ -989,12 +989,27 @@ public:
 // AWZ methods: +alloc / +allocWithZone:
 struct AWZScanner : scanner::Mixin<AWZScanner, AWZ, PrintCustomAWZ, scanner::Scope::Classes> {
     static bool isCustom(Class cls) {
+        const char *clsname = cls->mangledName();
+        if (strcmp(clsname, "Runner") == 0)
+        {
+            
+        }
         return cls->hasCustomAWZ();
     }
     static void setCustom(Class cls) {
+        const char *clsname = cls->mangledName();
+        if (strcmp(clsname, "Runner") == 0)
+        {
+            
+        }
         cls->setHasCustomAWZ();
     }
     static void setDefault(Class cls) {
+        const char *clsname = cls->mangledName();
+        if (strcmp(clsname, "Runner") == 0)
+        {
+            
+        }
         cls->setHasDefaultAWZ();
     }
     static bool isInterestingSelector(SEL sel) {
@@ -2554,6 +2569,12 @@ static Class realizeClassWithoutSwift(Class cls, Class previously)
 
     // fixme verify class is not in an un-dlopened part of the shared cache?
 
+    const char * className = "Runner";
+    if (strcmp(class_getName(cls), className) == 0)
+    {
+        printf("hello Runner...");
+    }
+    
     auto ro = (const class_ro_t *)cls->data();
     auto isMeta = ro->flags & RO_META;
     if (ro->flags & RO_FUTURE) {
@@ -2647,6 +2668,12 @@ static Class realizeClassWithoutSwift(Class cls, Class previously)
 
     // Set fastInstanceSize if it wasn't set already.
     cls->setInstanceSize(ro->instanceSize);
+    
+    const char *clsname = cls->mangledName();
+    if (strcmp(clsname, "Runner") == 0)
+    {
+        
+    }
 
     // Copy some flags from ro to rw
     if (ro->flags & RO_HAS_CXX_STRUCTORS) {
@@ -3541,6 +3568,8 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
             UnfixedSelectors += count;
             for (i = 0; i < count; i++) {
                 const char *name = sel_cname(sels[i]);
+//                printf("方法名称：%s\n", name);
+                
                 SEL sel = sel_registerNameNoLock(name, isBundle);
                 if (sels[i] != sel) {
                     sels[i] = sel;
@@ -6584,6 +6613,12 @@ objc_class::setInitialized()
     // adjustCustomFlagsForMethodChange() also knows these special cases.
     // attachMethodLists() also knows these special cases.
 
+    const char *clsname = cls->mangledName();
+    if (strcmp(clsname, "Runner") == 0)
+    {
+        
+    }
+    
     objc::AWZScanner::scanInitializedClass(cls, metacls);
     objc::RRScanner::scanInitializedClass(cls, metacls);
     objc::CoreScanner::scanInitializedClass(cls, metacls);
@@ -7906,7 +7941,13 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
     bool hasCxxDtor = cls->hasCxxDtor();
     bool fast = cls->canAllocNonpointer();
     size_t size;
+    
+    if (strcmp(cls->mangledName(), "Runner") == 0)
+    {
+        
+    }
 
+    // 1.计算实例内存大小
     size = cls->instanceSize(extraBytes);
     if (outAllocatedSize) *outAllocatedSize = size;
 
@@ -7914,6 +7955,7 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
     if (zone) {
         obj = (id)malloc_zone_calloc((malloc_zone_t *)zone, 1, size);
     } else {
+        // 2.申请内存
         obj = (id)calloc(1, size);
     }
     if (slowpath(!obj)) {
@@ -7923,6 +7965,7 @@ _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone,
         return nil;
     }
 
+    // 3.isa的初始化，进行类的绑定
     if (!zone && fast) {
         obj->initInstanceIsa(cls, hasCxxDtor);
     } else {

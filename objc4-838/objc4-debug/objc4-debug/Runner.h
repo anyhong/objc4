@@ -14,6 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *propertyCopyString;
 @property (nonatomic, strong) NSMutableString *mPropertyStrongString;
 @property (nonatomic, copy) NSMutableString *mPropertyCopyString;
+@property (nonatomic, strong) Runner *runnerInner;
+
++ (void)classTest;
+- (void)instanceTest;
+- (void)test1;
++ (void)test2;
+- (void)test2;
 @end
 
 NS_ASSUME_NONNULL_END

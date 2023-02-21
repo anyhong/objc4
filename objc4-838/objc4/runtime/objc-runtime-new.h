@@ -1725,7 +1725,7 @@ public:
 
 
 struct objc_class : objc_object {
-  objc_class(const objc_class&) = delete;
+  objc_class(const objc_class&) = delete; //= delete 表示禁止使用该函数
   objc_class(objc_class&&) = delete;
   void operator=(const objc_class&) = delete;
   void operator=(objc_class&&) = delete;
@@ -2179,10 +2179,12 @@ struct objc_class : objc_object {
     }
 
     inline size_t instanceSize(size_t extraBytes) const {
+        // 1.查看是否有缓存
         if (fastpath(cache.hasFastInstanceSize(extraBytes))) {
             return cache.fastInstanceSize(extraBytes);
         }
 
+        //2.字节对齐
         size_t size = alignedInstanceSize() + extraBytes;
         // CF requires all objects be at least 16 bytes.
         if (size < 16) size = 16;

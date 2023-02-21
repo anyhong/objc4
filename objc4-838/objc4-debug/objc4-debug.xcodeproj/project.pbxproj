@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2398A40727B399A5001754CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2398A40627B399A5001754CC /* main.m */; };
+		2398A40727B399A5001754CC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2398A40627B399A5001754CC /* main.mm */; };
 		2398A40F27B39A0A001754CC /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2398A40E27B39A0A001754CC /* libobjc.A.dylib */; };
 		2398A41527B39B1D001754CC /* Runner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2398A41127B39B1D001754CC /* Runner.m */; };
 		2398A41627B39B1D001754CC /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 2398A41227B39B1D001754CC /* Person.m */; };
+		2398A41C27B4ED56001754CC /* Runner+Cus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2398A41B27B4ED56001754CC /* Runner+Cus.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,13 +28,16 @@
 
 /* Begin PBXFileReference section */
 		2398A40327B399A5001754CC /* objc4-debug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "objc4-debug"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2398A40627B399A5001754CC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2398A40627B399A5001754CC /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		2398A40E27B39A0A001754CC /* libobjc.A.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libobjc.A.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		2398A41027B39A9B001754CC /* objc4-debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "objc4-debug.entitlements"; sourceTree = "<group>"; };
 		2398A41127B39B1D001754CC /* Runner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Runner.m; sourceTree = "<group>"; };
 		2398A41227B39B1D001754CC /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
 		2398A41327B39B1D001754CC /* Runner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Runner.h; sourceTree = "<group>"; };
 		2398A41427B39B1D001754CC /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
+		2398A41A27B4ED56001754CC /* Runner+Cus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner+Cus.h"; sourceTree = "<group>"; };
+		2398A41B27B4ED56001754CC /* Runner+Cus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Runner+Cus.m"; sourceTree = "<group>"; };
+		2398A41D27B64067001754CC /* Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +77,10 @@
 				2398A41327B39B1D001754CC /* Runner.h */,
 				2398A41127B39B1D001754CC /* Runner.m */,
 				2398A41027B39A9B001754CC /* objc4-debug.entitlements */,
-				2398A40627B399A5001754CC /* main.m */,
+				2398A40627B399A5001754CC /* main.mm */,
+				2398A41A27B4ED56001754CC /* Runner+Cus.h */,
+				2398A41B27B4ED56001754CC /* Runner+Cus.m */,
+				2398A41D27B64067001754CC /* Action.h */,
 			);
 			path = "objc4-debug";
 			sourceTree = "<group>";
@@ -144,8 +151,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2398A41627B39B1D001754CC /* Person.m in Sources */,
-				2398A40727B399A5001754CC /* main.m in Sources */,
+				2398A40727B399A5001754CC /* main.mm in Sources */,
 				2398A41527B39B1D001754CC /* Runner.m in Sources */,
+				2398A41C27B4ED56001754CC /* Runner+Cus.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,17 +1,13 @@
 //
 //  Person.m
-//  objc4-debug
+//  objc4-debugGUI
 //
-//  Created by anyhong on 2021/5/29.
+//  Created by manbang on 2022/3/14.
 //
 
 #import "Person.h"
 
 @implementation Person
-
-- (void)dealloc {
-    
-}
 
 + (void)load {
     
@@ -21,12 +17,8 @@
     
 }
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
+- (void)dealloc {
+    
 }
 
 + (instancetype)alloc {

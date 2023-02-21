@@ -7,8 +7,9 @@
 
 #import "Runner.h"
 #import "Person.h"
+#import "Action.h"
 
-@interface Runner ()
+@interface Runner ()<Action>
 @property (nonatomic, strong) NSMutableArray *strongArray;
 @property (nonatomic, strong) NSMutableArray *weakArray;
 @property (nonatomic, weak) Person *weakPerson;
@@ -16,6 +17,36 @@
 @end
 
 @implementation Runner
+
++ (instancetype)allocWithZone:(struct _NSZone *)zone {
+    Runner *runner = [super allocWithZone:zone];
+    return runner;
+}
+
++ (instancetype)alloc {
+    Runner *runner = [super alloc];
+    return runner;
+}
+
++ (void)load {
+    
+}
+
+- (void)dealloc {
+    NSLog(@"Runner dealloc [%@]", [NSThread currentThread]);
+}
+
++ (void)initialize {
+    
+}
+
+//+ (instancetype)new {
+//    Runner *runner = [super new];
+//    if (runner) {
+//        
+//    }
+//    return runner;
+//}
 
 - (instancetype)init {
     self = [super init];
@@ -29,6 +60,34 @@
 //        Person *obj = [[Person alloc] init];
 //        __weak Person *weakPerson = obj;
     }
+    return self;
+}
+
++ (void)classTest {
+    NSLog(@"classTest");
+}
+
+- (void)instanceTest {
+    NSLog(@"instanceTest");
+}
+
++ (void)test1 {
+    
+}
+
+- (void)test2 {
+    
+}
+
++ (void)test2 {
+    
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation {
+    
+}
+
+- (id)forwardingTargetForSelector:(SEL)selector {
     return self;
 }
 
